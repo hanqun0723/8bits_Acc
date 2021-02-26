@@ -1,0 +1,3 @@
+Command Line: /opt/CIC/Synopsys/verdi/2018.09/platform/LINUXAMD64/bin/vfast -silent -del . -o /home/hanqun/int8_vp/8bits_Acc/top/RESULT.vcd.fsdb -ft verilog /home/hanqun/int8_vp/8bits_Acc/top/RESULT.vcd
+uname(Linux hanqun-PC 5.4.0-65-generic #73~18.04.1-Ubuntu SMP Tue Jan 19 09:02:24 UTC 2021 x86_64)
+au time 0.002901 0.001927 0.000963 delta 7561216 7561216 total 97509376 97509376

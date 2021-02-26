@@ -1,0 +1,6 @@
+wvConvertFile -win $_nWave1 -o \
+           "/home/hanqun/int8_vp/8bits_Acc/top/RESULT.vcd.fsdb" "RESULT.vcd"
+wvOpenFile -win $_nWave1 {/home/hanqun/int8_vp/8bits_Acc/top/RESULT.vcd.fsdb}
+nMemSetPreference
+wvResizeWindow -win $_nWave1 0 23 1920 1017
+wvExit

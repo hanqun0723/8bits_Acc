@@ -1,0 +1,193 @@
+$date
+     Dec 07, 2020       22:57:01
+$end
+
+$version
+ SystemC 2.3.3-Accellera --- Jun 18 2020 11:44:23
+$end
+
+$timescale
+     1 ps
+$end
+
+$scope module SystemC $end
+$var wire    8  aaaaa  weight_Reg(0) [7:0]  $end
+$var wire    8  aaaab  weight_Reg(1) [7:0]  $end
+$var wire    8  aaaac  weight_Reg(2) [7:0]  $end
+$var wire    8  aaaad  weight_Reg(3) [7:0]  $end
+$var wire    8  aaaae  weight_Reg(4) [7:0]  $end
+$var wire    8  aaaaf  weight_Reg(5) [7:0]  $end
+$var wire    8  aaaag  weight_Reg(6) [7:0]  $end
+$var wire    8  aaaah  weight_Reg(7) [7:0]  $end
+$var wire    8  aaaai  weight_Reg(8) [7:0]  $end
+$var wire   16  aaaaj  result(0) [15:0]  $end
+$var wire   16  aaaak  result(1) [15:0]  $end
+$var wire   16  aaaal  result(2) [15:0]  $end
+$var wire   16  aaaam  result(3) [15:0]  $end
+$var wire   16  aaaan  result(4) [15:0]  $end
+$var wire   16  aaaao  result(5) [15:0]  $end
+$var wire   16  aaaap  result(6) [15:0]  $end
+$var wire   16  aaaaq  result(7) [15:0]  $end
+$var wire   16  aaaar  result(8) [15:0]  $end
+$var wire    8  aaaas  result_Reg(0) [7:0]  $end
+$var wire    8  aaaat  result_Reg(1) [7:0]  $end
+$var wire    8  aaaau  result_Reg(2) [7:0]  $end
+$var wire    8  aaaav  result_Reg(3) [7:0]  $end
+$var wire    8  aaaaw  result_Reg(4) [7:0]  $end
+$var wire    8  aaaax  result_Reg(5) [7:0]  $end
+$var wire    8  aaaay  result_Reg(6) [7:0]  $end
+$var wire    8  aaaaz  result_Reg(7) [7:0]  $end
+$var wire    8  aaaba  result_Reg(8) [7:0]  $end
+$var wire   16  aaabb  data_out [15:0]  $end
+$var wire    1  aaabc  weight_valid       $end
+$var wire    8  aaabd  weight(8) [7:0]  $end
+$var wire    8  aaabe  weight(7) [7:0]  $end
+$var wire    8  aaabf  weight(6) [7:0]  $end
+$var wire    8  aaabg  weight(5) [7:0]  $end
+$var wire    8  aaabh  weight(4) [7:0]  $end
+$var wire    8  aaabi  weight(3) [7:0]  $end
+$var wire    8  aaabj  weight(2) [7:0]  $end
+$var wire    8  aaabk  weight(1) [7:0]  $end
+$var wire    8  aaabl  weight(0) [7:0]  $end
+$var wire    8  aaabm  input(8) [7:0]  $end
+$var wire    8  aaabn  input(7) [7:0]  $end
+$var wire    8  aaabo  input(6) [7:0]  $end
+$var wire    8  aaabp  input(5) [7:0]  $end
+$var wire    8  aaabq  input(4) [7:0]  $end
+$var wire    8  aaabr  input(3) [7:0]  $end
+$var wire    8  aaabs  input(2) [7:0]  $end
+$var wire    8  aaabt  input(1) [7:0]  $end
+$var wire    8  aaabu  input(0) [7:0]  $end
+$var wire    1  aaabv  rst       $end
+$var wire    1  aaabw  clk       $end
+$upscope $end
+$enddefinitions  $end
+
+$comment
+All initial values are dumped below at time 0 sec = 0 timescale units.
+$end
+
+$dumpvars
+b0 aaaaa
+b0 aaaab
+b0 aaaac
+b0 aaaad
+b0 aaaae
+b0 aaaaf
+b0 aaaag
+b0 aaaah
+b0 aaaai
+b0 aaaaj
+b0 aaaak
+b0 aaaal
+b0 aaaam
+b0 aaaan
+b0 aaaao
+b0 aaaap
+b0 aaaaq
+b0 aaaar
+b0 aaaas
+b0 aaaat
+b0 aaaau
+b0 aaaav
+b0 aaaaw
+b0 aaaax
+b0 aaaay
+b0 aaaaz
+b0 aaaba
+b0 aaabb
+0aaabc
+b0 aaabd
+b0 aaabe
+b0 aaabf
+b0 aaabg
+b0 aaabh
+b0 aaabi
+b0 aaabj
+b0 aaabk
+b0 aaabl
+b0 aaabm
+b0 aaabn
+b0 aaabo
+b0 aaabp
+b0 aaabq
+b0 aaabr
+b0 aaabs
+b0 aaabt
+b0 aaabu
+1aaabv
+1aaabw
+$end
+
+#5000
+0aaabw
+
+#10000
+b1 aaaab
+b10 aaaac
+b11 aaaad
+b100 aaaae
+b101 aaaaf
+b110 aaaag
+b111 aaaah
+b1000 aaaai
+b1 aaaak
+b100 aaaal
+b1001 aaaam
+b10000 aaaan
+b11001 aaaao
+b100100 aaaap
+b110001 aaaaq
+b1000000 aaaar
+1aaabc
+b1000 aaabd
+b111 aaabe
+b110 aaabf
+b101 aaabg
+b100 aaabh
+b11 aaabi
+b10 aaabj
+b1 aaabk
+b1000 aaabm
+b111 aaabn
+b110 aaabo
+b101 aaabp
+b100 aaabq
+b11 aaabr
+b10 aaabs
+b1 aaabt
+0aaabv
+1aaabw
+
+#15000
+0aaabw
+
+#20000
+b1 aaaat
+b100 aaaau
+b1001 aaaav
+b10000 aaaaw
+b11001 aaaax
+b100100 aaaay
+b110001 aaaaz
+b1000000 aaaba
+b11001100 aaabb
+0aaabc
+1aaabw
+
+#25000
+0aaabw
+
+#30000
+1aaabw
+
+#35000
+0aaabw
+
+#40000
+1aaabw
+
+#45000
+0aaabw
+
+#50000

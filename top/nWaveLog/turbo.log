@@ -1,0 +1,3 @@
+Command Line: /opt/CIC/Synopsys/verdi/2018.09/platform/LINUXAMD64/bin/Novas -nWave RESULT.vcd
+uname(Linux hanqun-PC 5.4.0-65-generic #73~18.04.1-Ubuntu SMP Tue Jan 19 09:02:24 UTC 2021 x86_64)
+au time 31.252904 2.087368 0.630716 delta 422715392 422715392 total 853536768 853536768
