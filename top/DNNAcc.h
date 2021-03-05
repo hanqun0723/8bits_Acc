@@ -40,11 +40,21 @@ SC_MODULE(DNNAcc)
     sc_in<bool>         clk;
     sc_in<bool>         rst;
 
+    //DMAC
+    sc_in<sc_int<32> > read_data;
+    sc_in<bool> data_valid;
+    sc_out<sc_uint<32> > src;
+    sc_out<sc_uint<32> > tgt;
+    sc_out<sc_uint<32> > length;
+    sc_out<bool> DMA_start; 
+    sc_in<bool> DMA_irt;
+    sc_out<bool>  DMA_irtclr;
+
     //InputSRAM
     sc_signal<bool>     I_CS[ISRAM_BANK_NUM];
     sc_signal<bool>     I_WEB[ISRAM_BANK_NUM];
     sc_signal<sc_uint<ISRAM_ADDR_LEN> >  I_addr[ISRAM_BANK_NUM];
-    sc_in<sc_int<ISRAM_DATA_WIDTH> > I_data_i[ISRAM_BANK_NUM];
+    sc_signal<sc_int<ISRAM_DATA_WIDTH> > I_data_i[ISRAM_BANK_NUM];
     sc_signal<sc_int<ISRAM_DATA_WIDTH> > I_data_o[ISRAM_BANK_NUM];    
 
     //SRAM bus
@@ -66,9 +76,9 @@ SC_MODULE(DNNAcc)
     sc_signal<bool>     W_CS[WSRAM_NUM];
     sc_signal<bool>     W_WEB[WSRAM_NUM];
     sc_signal<sc_uint<WSRAM_ADDR_LEN> >  W_addr[WSRAM_NUM];
-    sc_in<sc_uint<3> >    W_length[WSRAM_NUM];            //1bytes ~ 4bytes   
-    sc_in<sc_uint<WSRAM_BANK_BITS> >     W_bank_sel[WSRAM_NUM];        
-    sc_in<sc_int<BUS_WIDTH> > W_data_i[WSRAM_NUM];
+    sc_signal<sc_uint<3> >    W_length[WSRAM_NUM];            //1bytes ~ 4bytes   
+    sc_signal<sc_uint<WSRAM_BANK_BITS> >     W_bank_sel[WSRAM_NUM];        
+    sc_signal<sc_int<BUS_WIDTH> > W_data_i[WSRAM_NUM];
     sc_signal<sc_int<DATA_WIDTH> > W_data_o[WSRAM_NUM][WSRAM_BANK_NUM];  
 
     //PE
@@ -211,11 +221,22 @@ SC_MODULE(DNNAcc)
         controller.clk(clk);
         controller.rst(rst);
         controller.start(start);
+
+        controller.src(src);
+        controller.tgt(tgt);
+        controller.length(length);
+        controller.DMA_start(DMA_start);
+        controller.read_data(read_data);
+        controller.data_valid(data_valid);
+        controller.DMA_irt(DMA_irt);
+        controller.DMA_irtclr(DMA_irtclr);
+
         for(int i = 0; i < ISRAM_BANK_NUM; i++)
         {
             controller.I_CS[i](I_CS[i]);
             controller.I_WEB[i](I_WEB[i]);
             controller.I_addr[i](I_addr[i]);
+            controller.I_data_i[i](I_data_i[i]);
         }        
         for(int i = 0; i < ISRAM_BANK_NUM * ISRAM_bytes; i++)
             controller.bus_mux_sel[i](bus_mux_sel[i]); 
@@ -231,6 +252,9 @@ SC_MODULE(DNNAcc)
             controller.W_CS[i](W_CS[i]);
             controller.W_WEB[i](W_WEB[i]);
             controller.W_addr[i](W_addr[i]);    
+            controller.W_length[i](W_length[i]);
+            controller.W_bank_sel[i](W_bank_sel[i]);
+            controller.W_data_i[i](W_data_i[i]);
         }  
         for(int i = 0; i < OSRAM_NUM; i++)
         {

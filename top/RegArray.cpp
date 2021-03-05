@@ -22,7 +22,7 @@ void RegArray::do_RegArray(){
         {
             if(shift[i])
             {
-                cout << "shift[ " << i << "] :" << shift[i] << endl;
+                //cout << "shift[ " << i << "] :" << shift[i] << endl;
                 for(int j = 0; j < REG_ROW_NUM - 1; j++)
                 {
                     reg[i * REG_ROW_NUM + j] = reg[i * REG_ROW_NUM + j + 1];

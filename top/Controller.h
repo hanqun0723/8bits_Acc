@@ -42,11 +42,21 @@ SC_MODULE(Controller)
     // sc_in<sc_int<32> > tile_w;
     // sc_in<sc_int<32> > tile_h;
 
+    //DMAC
+    sc_out<sc_uint<32> > src;
+    sc_out<sc_uint<32> > tgt;
+    sc_out<sc_uint<32> > length;
+    sc_out<bool> DMA_start; 
+    sc_in<bool>      data_valid;
+    sc_in<sc_int<32> > read_data;
+    sc_in<bool>      DMA_irt;
+    sc_out<bool>     DMA_irtclr;
+
     //Input SRAM
     sc_out<bool>     I_CS[ISRAM_BANK_NUM];
     sc_out<bool>     I_WEB[ISRAM_BANK_NUM];
     sc_out<sc_uint<ISRAM_ADDR_LEN> >  I_addr[ISRAM_BANK_NUM];
-    // sc_out<sc_int<ISRAM_DATA_WIDTH> > I_data_i[ISRAM_BANK_NUM];
+    sc_out<sc_int<ISRAM_DATA_WIDTH> > I_data_i[ISRAM_BANK_NUM];
 
     //SRAM bus
     sc_out<bool> bus_mux_sel[ISRAM_BANK_NUM * ISRAM_bytes];
@@ -63,9 +73,9 @@ SC_MODULE(Controller)
     sc_out<bool>     W_CS[WSRAM_NUM];
     sc_out<bool>     W_WEB[WSRAM_NUM];
     sc_out<sc_uint<WSRAM_ADDR_LEN> >  W_addr[WSRAM_NUM];
-    // sc_out<sc_uint<3> >    W_length[WSRAM_NUM];           
-    // sc_out<sc_uint<WSRAM_BANK_BITS> >     W_bank_sel[WSRAM_NUM];        
-    // sc_out<sc_int<BUS_WIDTH> > W_data_i[WSRAM_NUM];
+    sc_out<sc_uint<3> >    W_length[WSRAM_NUM];    
+    sc_out<sc_uint<WSRAM_BANK_BITS> >     W_bank_sel[WSRAM_NUM];
+    sc_out<sc_int<BUS_WIDTH> > W_data_i[WSRAM_NUM];                  
 
     //PE
     // sc_out<bool>       weight_valid[PE_NUM];
@@ -104,10 +114,15 @@ SC_MODULE(Controller)
     sc_signal<sc_uint<32> > tile_h_Reg;
     sc_signal<sc_uint<32> > tile_w_Reg;
 
+    sc_signal<bool> first_load_Reg;
     sc_signal<sc_uint<32> > store_col_index_Reg;
     sc_signal<sc_uint<32> > shift_count_Reg;
+    sc_signal<bool> prev_store_Reg;
     sc_signal<sc_uint<32> > write_result_Reg;
+    sc_signal<sc_uint<32> > count_Reg;
 
+    sc_uint<32> load_tile_width;
+    sc_uint<32> load_tile_height;
     //DMAC
     // sc_in<bool>         DMA_done;   //when finish one buffer
     // //sc_in<bool>         DMA_irt;    //all data are transfered
@@ -116,11 +131,14 @@ SC_MODULE(Controller)
     /**************************Inner data**************************/
 
     sc_signal<sc_uint<32> > state;
+    sc_signal<sc_uint<32> > dma_state;
+    sc_signal<sc_uint<32> > pe_state;
     sc_signal<sc_uint<32> > read_data_state;
 
 
     void do_Controller();
-    void do_addrControl();
+    void do_dmaRead();
+    void do_startPE();
     void do_reset();
 
     SC_CTOR(Controller)

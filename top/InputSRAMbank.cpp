@@ -4,7 +4,8 @@ void InputSRAMbank::do_reset()
 {
     for(int i = 0; i < ISRAMbank_element; i++)
     {
-        data[i] = 16909060 + i;
+        data[i] = 0;
+        //data[i] = 16909060 + i;
     }
 }
 

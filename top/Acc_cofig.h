@@ -46,10 +46,15 @@
 
 /******Controller******/
 #define ACC_IDLE           (0)
-#define DMA_READ           (1)
-#define ACC_READ_ISRAM           (2)
-#define ACC_ISRAM_TO_REG    (3)
-#define ACC_START_PE      (4)
+#define ACC_DMA_READ       (1)
+#define ACC_START_PE      (2)
+#define ACC_FINISH        (3)
+
+/******PE******/
+#define READ_ISRAM  (0)
+#define ISRAM_TO_REG (1)
+#define PE_START    (2)
+
 
 #define FSIZE_3_CASE1  (0)
 #define FSIZE_3_CASE2  (1)
@@ -57,7 +62,13 @@
 #define FSIZE_3_CASE4  (3)
 
 /******DMAC******/
+#define DMA_WEIGHT_CONFIG (0)
+#define DMA_READ_TO_WSRAM (1)
+#define DMA_INPUT_CONFIG  (2)
+#define DMA_READ_TO_ISRAM (3)
 
-
+/******DRAM BASE******/
+#define DRAM_INPUT_BASE (0x00000000) 
+#define DRAM_WEIGHT_BASE (0x00006000)
 
 

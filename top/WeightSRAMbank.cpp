@@ -24,7 +24,7 @@
 void WeightSRAMbank::do_reset(){
 
     for(int i = 0; i < WSRAMbank_element; i++){
-        weight[i] = i + 1;
+        weight[i] = 0;
     }
 
     weight_o = 0;

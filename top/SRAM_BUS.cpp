@@ -33,7 +33,7 @@ void SRAM_BUS::do_SRAMBUS()
         if (bus_mux_sel[i].read())
         {
             
-            cout << "reg_index : " << reg_index << "| data[" << i << "] : " << data[i] << endl;
+            //cout << "reg_index : " << reg_index << "| data[" << i << "] : " << data[i] << endl;
             bus_reg_o[reg_index].write(data[i]);
             reg_index = reg_index + 1;
             

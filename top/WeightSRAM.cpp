@@ -42,40 +42,48 @@ void WeightSRAM::do_WeightSRAM(){
         wait();
 
         /***Write***/
-        if(WEB.read())          
-        {            
-            if(w_length.read())
-            {
-                bank_addr[bank_sel.read()] = addr.read();
-                weight_i[bank_sel.read()]  = weight.read().range(7,0);
-            }
-            else
-            {
-                for(int i = 0; i < w_length.read(); i++) 
-                {
-                    if((bank_sel.read() + i) == WSRAM_BANK_NUM)
-                    {
-                        bank_addr[(bank_sel.read() + i) - WSRAM_BANK_NUM] = addr.read() + 1;
-                        weight_i[(bank_sel.read() + i) - WSRAM_BANK_NUM] = weight.read().range( (i * 8 + 7), (i * 8));
-                    }
-                    else
-                    {
-                        bank_addr[bank_sel.read() + i] = addr.read();
-                        weight_i[bank_sel.read() + i] = weight.read().range(i * 8 + 7, i * 8);
-                    }
-
-                }
-            }
-        }
-        /***Read***/
-        else                    
+        if (CS.read())
         {
-            for(int i = 0; i < WSRAM_BANK_NUM; i++)
-            {
-                bank_addr[i] = addr.read();   //Read data address
+            if(WEB.read())          
+            {            
+                // if(w_length.read())
+                // {
+                //     bank_addr[bank_sel.read()] = addr.read();
+                //     weight_i[bank_sel.read()]  = weight.read().range(7,0);
+                // }
+                // else
+                // {
+                    //cout << "time : " << sc_time_stamp() << endl;  
+                    for(int i = 0; i < w_length.read(); i++) 
+                    {
+                        //cout << "bank_sel : " << bank_sel.read() << endl;
+                        if((bank_sel.read() + i) >= WSRAM_BANK_NUM)
+                        {
+                            bank_addr[(bank_sel.read() + i) - WSRAM_BANK_NUM] = addr.read() + 1;
+                            weight_i[(bank_sel.read() + i) - WSRAM_BANK_NUM] = weight.read().range( (i * 8 + 7), (i * 8));
+                            //cout << "addr :" << addr.read() + 1;
+                            //cout << " weight :　" << weight.read().range(i * 8 + 7, i * 8) << endl;
+                        }
+                        else
+                        {
+                            bank_addr[bank_sel.read() + i] = addr.read();
+                            weight_i[bank_sel.read() + i] = weight.read().range(i * 8 + 7, i * 8);
+                            //cout << "addr :" << addr.read();
+                            //cout << " weight :　" << weight.read().range(i * 8 + 7, i * 8) << endl;
+                        }
+                    }
+                    //cout << "================================" << endl;
+                //}
             }
+            /***Read***/
+            else                    
+            {
+                for(int i = 0; i < WSRAM_BANK_NUM; i++)
+                {
+                    bank_addr[i] = addr.read();   //Read data address
+                }
 
+            }
         }
-        
     }
 }
