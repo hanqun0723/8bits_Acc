@@ -207,7 +207,7 @@ int sc_main(int argc, char *argv[]){
     sc_trace(tf, dnnacc.controller.shift_count_Reg, "dnnacc.controller.shift_count_Reg");
     sc_trace(tf, dnnacc.controller.store_col_index, "dnnacc.controller.store_col_index");
     sc_trace(tf, dnnacc.controller.pe_state, "dnnacc.controller.pe_state");
-
+    sc_trace(tf, dnnacc.controller.write_result_Reg, "dnnacc.controller.write_result_Reg");
     //Start Simulation
     rst.write(1);
     start.write(0);

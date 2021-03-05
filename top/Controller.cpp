@@ -324,9 +324,16 @@ void Controller::do_startPE()
 
             // if (shift_count_Reg.read() == (tile_w_Reg.read() - f_size_Reg.read()))
             // {
-            //     ibank_ctrl_Reg.write(ibank_ctrl_Reg.read() + 1);
-            //     cout << "ibankctrl+1" << endl;
+            //     write_result_Reg.write(0)
+            //     // ibank_ctrl_Reg.write(ibank_ctrl_Reg.read() + 1);
+            //     // cout << "ibankctrl+1" << endl;
             // }
+
+            if ((ibank_ctrl_Reg.read() >= tile_h_Reg.read() - 2) && (ibank_addr_Reg.read() > 0) &&
+                 (shift_count_Reg.read() == 0 ))
+                write_result_Reg.write(0);
+            else if (ibank_ctrl_Reg.read() == 0)
+                write_result_Reg.write(1);
 
             switch(read_data_state.read())
             {
@@ -352,7 +359,6 @@ void Controller::do_startPE()
                     for (int i = 0; i < REG_NUM; i++)
                         store_reg[i].write(0);
 
-                    write_result_Reg.write(1);
                     store_col_index.write(2);
 
                 }break;
@@ -415,6 +421,10 @@ void Controller::do_startPE()
                 else
                     osram_addr_Reg.write(osram_addr_Reg.read() + 1);
             }
+            else{
+                for (int i = 0; i < OSRAM_NUM; i++)
+                    O_CS[i].write(0);                
+            }
 
         }break;
 
@@ -459,11 +469,11 @@ void Controller::do_Controller()
 
             case ACC_START_PE:{
 
-                if ( (ibank_ctrl_Reg.read() == tile_h_Reg.read() - 1) && (ibank_addr_Reg.read() == (tile_w_Reg.read() - 1)/ISRAM_bytes))
+                if ( (ibank_ctrl_Reg.read() > 0 && (write_result_Reg.read() == 0)) )
                 {
                     state = ACC_FINISH;
-                    cout << "ibank_ctrl_Reg : " << ibank_ctrl_Reg.read() << endl;
-                    cout << "ibank_addr_Reg : " << ibank_addr_Reg.read() << endl;
+                    // cout << "ibank_ctrl_Reg : " << ibank_ctrl_Reg.read() << endl;
+                    // cout << "ibank_addr_Reg : " << ibank_addr_Reg.read() << endl;
                 }
                 do_startPE();
 
