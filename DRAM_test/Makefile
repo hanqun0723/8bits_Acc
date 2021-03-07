@@ -21,7 +21,8 @@ $(EXE): $(MAIN) $(OBJECTS) $(HEADERS)
 	@echo ""
 	@echo "$@ build done successfully..."
 	@echo ""
-
+	mv *.o ./obj
+	./test
 
 %.o:%.cpp %.h
 	@echo "Compiling $< ..."

@@ -44,38 +44,51 @@ SC_MODULE(DMAC)
     sc_in<bool> clk;
     sc_in<bool> rst;
 
-    sc_in<bool> DMA_type;
+    sc_in<sc_uint<32> > src;
+    sc_in<sc_uint<32> > tgt;
+    sc_in<sc_uint<32> > length;
     sc_in<bool> DMA_start; 
-    sc_in<bool> write_config;
 
-    sc_in<sc_uint<32> > f_size;
-    sc_in<sc_uint<32> > f_channel;
-    sc_in<sc_uint<32> > f_num;
-    sc_in<sc_uint<32> > weight_base;
+    sc_out<sc_uint<32> > read_data;
+    sc_out<bool>        data_valid;
+    //sc_in<bool> DMA_type;
+    // sc_in<bool> write_config;
+
+    // sc_in<sc_uint<32> > f_size;
+    // sc_in<sc_uint<32> > f_channel;
+    // sc_in<sc_uint<32> > f_num;
+    // sc_in<sc_uint<32> > weight_base;
 
     //Register
-    sc_signal<sc_uint<32> > f_size_Reg;
-    sc_signal<sc_uint<32> > f_channel_Reg;
-    sc_signal<sc_uint<32> > f_num_Reg;
-    sc_signal<sc_uint<32> > weight_base_Reg;
+    // sc_signal<sc_uint<32> > f_size_Reg;
+    // sc_signal<sc_uint<32> > f_channel_Reg;
+    // sc_signal<sc_uint<32> > f_num_Reg;
+    // sc_signal<sc_uint<32> > weight_base_Reg;
 
-    sc_signal<sc_uint<32> > cur_f_channel;
-    sc_signal<sc_uint<32> > cur_f_num;
-    sc_signal<sc_uint<32> > counter;
-    sc_signal<sc_uint<32> > size;
+    // sc_signal<sc_uint<32> > cur_f_channel;
+    // sc_signal<sc_uint<32> > cur_f_num;
+    // sc_signal<sc_uint<32> > counter;
+    // sc_signal<sc_uint<32> > size;
 
     sc_signal<sc_uint<32> > state;
-    sc_signal<sc_int<32> > data;
 
+    //control register
+    sc_signal<sc_uint<32> > src_Reg;
+    sc_signal<sc_uint<32> > tgt_Reg;
+    sc_signal<sc_uint<32> > length_Reg;
+    //sc_signal<sc_int<32> > data;
+
+    //internel register
+    sc_signal<sc_uint<32> > count_Reg;
     int data_m;
 
-    sc_out<bool>    W_CS;
-    sc_out<bool>    W_WEB;
-    sc_out<sc_uint<WSRAM_ADDR_LEN> >    W_addr;
+    // sc_out<bool>    W_CS;
+    // sc_out<bool>    W_WEB;
+    // sc_out<sc_uint<WSRAM_ADDR_LEN> >    W_addr;
 
-    sc_out<sc_uint<3> >    W_length;            //1bytes ~ 4bytes   
-    sc_out<sc_int<BUS_WIDTH> >    W_weight;    //32bits weight
-    sc_out<sc_uint<WSRAM_BANK_BITS> >     W_bank_sel; 
+    // sc_out<sc_uint<3> >    W_length;            //1bytes ~ 4bytes   
+    // sc_out<sc_int<BUS_WIDTH> >    W_weight;    //32bits weight
+    // sc_out<sc_uint<WSRAM_BANK_BITS> >     W_bank_sel; 
 
     void do_DMAC();
     void do_reset();

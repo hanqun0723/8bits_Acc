@@ -9,7 +9,7 @@ void DRAM::b_transport( tlm::tlm_generic_payload& trans, sc_time& delay ){
 
     delay = sc_time(0, SC_NS); // Accept delay
     int dram_delay=calculate_delay(addr);
-    delay = delay + sc_time(dram_delay, SC_NS); // Latency
+    //delay = delay + sc_time(dram_delay, SC_NS); // Latency
     wait(delay);
     if ( cmd == tlm::TLM_READ_COMMAND ){
         memcpy(ptr, &mem[addr/4], len);

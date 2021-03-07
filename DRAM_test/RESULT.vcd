@@ -1,5 +1,5 @@
 $date
-     Feb 25, 2021       01:04:44
+     Feb 28, 2021       01:31:55
 $end
 
 $version
@@ -12,11 +12,16 @@ $end
 
 $scope module SystemC $end
 $var wire   32  aaaaa  dmac->state [31:0]  $end
-$var wire   32  aaaab  dmac->counter [31:0]  $end
-$var wire   32  aaaac  dmac->size [31:0]  $end
-$var wire    1  aaaad  dmac->DMA_start       $end
-$var wire    1  aaaae  dmac->rst       $end
-$var wire    1  aaaaf  dmac->clk       $end
+$var wire   32  aaaab  dmac->count_Reg [31:0]  $end
+$var wire   32  aaaac  dmac->length_Reg [31:0]  $end
+$var wire    1  aaaad  dmac->data_valid       $end
+$var wire   32  aaaae  dmac->read_data [31:0]  $end
+$var wire    1  aaaaf  dmac->DMA_start       $end
+$var wire   32  aaaag  dmac->length [31:0]  $end
+$var wire   32  aaaah  dmac->tgt [31:0]  $end
+$var wire   32  aaaai  dmac->src [31:0]  $end
+$var wire    1  aaaaj  dmac->rst       $end
+$var wire    1  aaaak  dmac->clk       $end
 $upscope $end
 $enddefinitions  $end
 
@@ -29,210 +34,194 @@ b0 aaaaa
 b0 aaaab
 b0 aaaac
 0aaaad
-1aaaae
-1aaaaf
+b0 aaaae
+0aaaaf
+b0 aaaag
+b0 aaaah
+b0 aaaai
+1aaaaj
+1aaaak
 $end
 
 #5000
-0aaaaf
+0aaaak
 
 #10000
-0aaaae
+b1 aaaaa
+b10 aaaac
 1aaaaf
+b10 aaaag
+b1010 aaaah
+0aaaaj
+1aaaak
 
 #15000
-0aaaaf
+0aaaak
 
 #20000
-b1 aaaaa
+b1 aaaab
 1aaaad
-1aaaaf
+b10000000000000010 aaaae
+0aaaaf
+1aaaak
 
 #25000
-0aaaaf
+0aaaak
 
 #30000
-b1 aaaab
-b1001 aaaac
-1aaaaf
+b0 aaaaa
+b10 aaaab
+b11111101111111100000010000000001 aaaae
+1aaaak
 
 #35000
-0aaaaf
+0aaaak
 
 #40000
-b10 aaaab
-1aaaaf
+b0 aaaab
+b0 aaaac
+0aaaad
+1aaaak
 
 #45000
-0aaaaf
+0aaaak
 
 #50000
-b11 aaaab
-1aaaaf
+1aaaak
 
 #55000
-0aaaaf
+0aaaak
 
 #60000
-b100 aaaab
-1aaaaf
+1aaaak
 
 #65000
-0aaaaf
+0aaaak
 
 #70000
-b101 aaaab
-1aaaaf
+1aaaak
 
 #75000
-0aaaaf
+0aaaak
 
 #80000
-b110 aaaab
-1aaaaf
+1aaaak
 
 #85000
-0aaaaf
+0aaaak
 
 #90000
-b111 aaaab
-1aaaaf
+1aaaak
 
 #95000
-0aaaaf
+0aaaak
 
 #100000
-b1000 aaaab
-1aaaaf
+1aaaak
 
 #105000
-0aaaaf
+0aaaak
 
 #110000
-b1001 aaaab
-1aaaaf
+1aaaak
 
 #115000
-0aaaaf
+0aaaak
 
 #120000
-b0 aaaaa
-b1010 aaaab
-1aaaaf
+1aaaak
 
 #125000
-0aaaaf
+0aaaak
 
 #130000
-b1 aaaaa
-1aaaaf
+1aaaak
 
 #135000
-0aaaaf
+0aaaak
 
 #140000
-b0 aaaaa
-b1011 aaaab
-1aaaaf
+1aaaak
 
 #145000
-0aaaaf
+0aaaak
 
 #150000
-b1 aaaaa
-1aaaaf
+1aaaak
 
 #155000
-0aaaaf
+0aaaak
 
 #160000
-b0 aaaaa
-b1100 aaaab
-1aaaaf
+1aaaak
 
 #165000
-0aaaaf
+0aaaak
 
 #170000
-b1 aaaaa
-1aaaaf
+1aaaak
 
 #175000
-0aaaaf
+0aaaak
 
 #180000
-b0 aaaaa
-b1101 aaaab
-1aaaaf
+1aaaak
 
 #185000
-0aaaaf
+0aaaak
 
 #190000
-b1 aaaaa
-1aaaaf
+1aaaak
 
 #195000
-0aaaaf
+0aaaak
 
 #200000
-b0 aaaaa
-b1110 aaaab
-1aaaaf
+1aaaak
 
 #205000
-0aaaaf
+0aaaak
 
 #210000
-b1 aaaaa
-1aaaaf
+1aaaak
 
 #215000
-0aaaaf
+0aaaak
 
 #220000
-b0 aaaaa
-b1111 aaaab
-1aaaaf
+1aaaak
 
 #225000
-0aaaaf
+0aaaak
 
 #230000
-b1 aaaaa
-1aaaaf
+1aaaak
 
 #235000
-0aaaaf
+0aaaak
 
 #240000
-b0 aaaaa
-b10000 aaaab
-1aaaaf
+1aaaak
 
 #245000
-0aaaaf
+0aaaak
 
 #250000
-b1 aaaaa
-1aaaaf
+1aaaak
 
 #255000
-0aaaaf
+0aaaak
 
 #260000
-b0 aaaaa
-b10001 aaaab
-1aaaaf
+1aaaak
 
 #265000
-0aaaaf
+0aaaak
 
 #270000
-b1 aaaaa
-1aaaaf
+1aaaak
 
 #275000
-0aaaaf
+0aaaak
 
 #280000

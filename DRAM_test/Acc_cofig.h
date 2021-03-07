@@ -51,5 +51,8 @@
 /******DMAC******/
 
 
+/******DRAM BASE******/
+#define DRAM_INPUT_BASE (0x00000000) 
+#define DRAM_WEIGHT_BASE (0x00006000)
 
 
