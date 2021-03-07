@@ -44,8 +44,8 @@ void OutputSRAM::do_OutputSRAM()
             {    
                 case O_READ:
                     
-                    data_o.write( (O_SRAMdata[addr_r.read()] << DATA_WIDTH) |
-                                    O_SRAMdata[addr_r.read() + 1]);
+                    cout << "addr_Read!!!" << endl; 
+                    data_o.write(O_SRAMdata[addr_r.read()]);
 
                 break;
 
@@ -58,8 +58,9 @@ void OutputSRAM::do_OutputSRAM()
 
                 case O_READ_WRITE:
 
-                    data_o.write( (O_SRAMdata[addr_r.read()] << DATA_WIDTH) |
-                                    O_SRAMdata[addr_r.read() + 1]);
+                    data_o.write(O_SRAMdata[addr_r.read()]);
+                    // data_o.write( (O_SRAMdata[addr_r.read()] << DATA_WIDTH) |
+                    //                 O_SRAMdata[addr_r.read() + 1]);
                     O_SRAMdata[addr_w.read()] =  data_i.read();
 
                 break;

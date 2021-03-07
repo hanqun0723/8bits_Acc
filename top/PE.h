@@ -35,8 +35,8 @@ SC_MODULE(PE){
     //sc_in<sc_int<8> > bias;
     //sc_in<sc_int<8> > Dequantize; 
 
-    sc_in<bool>       weight_valid;
-    sc_in<bool>       last_channel;
+    // sc_in<bool>       weight_valid;
+    // sc_in<bool>       last_channel;
 
     sc_in<bool>           add_prev;          //add_prev = 1 means add previos psum
     sc_in<sc_int<16> >    prev_psum;
@@ -72,7 +72,7 @@ SC_MODULE(PE){
         for (int i = 0; i < 9; i++){
           sensitive << result_Reg[i];
         }
-        sensitive << add_prev << prev_psum << last_channel; 
+        sensitive << add_prev << prev_psum; 
         
     }
 

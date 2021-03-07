@@ -22,6 +22,7 @@
 #ifndef _CONTROLLER_H
 #define _CONTROLLER_H
 
+#include "./conv_testdata/param.h"
 #include "Acc_cofig.h"
 #include "systemc.h"
 
@@ -80,15 +81,15 @@ SC_MODULE(Controller)
     //PE
     // sc_out<bool>       weight_valid[PE_NUM];
     // sc_out<bool>       last_channel[PE_NUM];
-    // sc_out<bool>           add_prev[PE_NUM];         
+    sc_out<bool>           add_prev;         
     // sc_out<sc_int<PSUM_WIDTH> >    prev_psum[PE_NUM];
 
     //Output SRAM
     sc_out<bool>    O_CS[OSRAM_NUM];
-    sc_out<sc_uint<2> >     read_write[OSRAM_NUM];  	
+    sc_out<sc_uint<2> >     read_write;  	
     // sc_out<bool>            O_WEB[OSRAM_NUM];             
     sc_out<sc_uint<OSRAM_ADDR_LEN> > O_addr_w[OSRAM_NUM];    
-    // sc_out<sc_uint<OSRAM_ADDR_LEN> > O_addr_r[OSRAM_NUM];  
+    sc_out<sc_uint<OSRAM_ADDR_LEN> > O_addr_r[OSRAM_NUM];  
 
 
     //control register
@@ -119,8 +120,9 @@ SC_MODULE(Controller)
     sc_signal<sc_uint<32> > shift_count_Reg;
     sc_signal<bool> prev_store_Reg;
     sc_signal<sc_uint<32> > write_result_Reg;
-    sc_signal<sc_uint<32> > count_Reg;
-
+    sc_signal<sc_uint<32> > dma_count_Reg;
+    sc_signal<sc_uint<32> > conv_count_Reg;
+    
     sc_uint<32> load_tile_width;
     sc_uint<32> load_tile_height;
     //DMAC

@@ -74,8 +74,8 @@ void PE::do_Accum()
     for(int i = 0; i < MAC_NUM; i++)
         psum = psum + result_Reg[i].read();
 
-    // if(add_prev.read())
-    //     //psum = psum + prev_psum.read();
+    if(add_prev.read())
+        psum = psum + prev_psum.read();
 
     // if(last_channel.read())
     // {

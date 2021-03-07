@@ -56,7 +56,6 @@ SC_MODULE(WeightSRAM){
     sc_vector<WeightSRAMbank> wbank;    //Initialize array of instances
 
     void do_WeightSRAM();
-    void do_reset();
 
 	SC_CTOR(WeightSRAM) : wbank("wbank",WSRAM_BANK_NUM)
 	{
@@ -72,9 +71,9 @@ SC_MODULE(WeightSRAM){
             wbank[i].weight_o(weight_o[i]);
         }
 
-        SC_THREAD(do_WeightSRAM);
-        sensitive << clk.pos() << rst.pos();
-
+        SC_METHOD(do_WeightSRAM);
+        sensitive << CS << WEB;
+        sensitive << addr << w_length << weight << bank_sel;
     }
 
 };

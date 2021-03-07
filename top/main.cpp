@@ -35,10 +35,10 @@ int sc_main(int argc, char *argv[]){
     // sc_signal<sc_uint<3> >    W_length[WSRAM_NUM];           
     // sc_signal<sc_uint<WSRAM_BANK_BITS> >     W_bank_sel[WSRAM_NUM];        
     // sc_signal<sc_int<BUS_WIDTH> > W_data_i[WSRAM_NUM];
-    sc_signal<bool>       weight_valid[PE_NUM];
-    sc_signal<bool>       last_channel[PE_NUM];
-    sc_signal<bool>           add_prev[PE_NUM];         
-    sc_signal<sc_int<PSUM_WIDTH> >    prev_psum[PE_NUM];
+    // sc_signal<bool>       weight_valid[PE_NUM];
+    // sc_signal<bool>       last_channel[PE_NUM];
+    // sc_signal<bool>           add_prev[PE_NUM];         
+    // sc_signal<sc_int<PSUM_WIDTH> >    prev_psum[PE_NUM];
     // sc_signal<sc_uint<2> >     read_write[OSRAM_NUM];  	
     // sc_signal<bool>            O_WEB[OSRAM_NUM];             
     // sc_signal<sc_uint<OSRAM_ADDR_LEN> > O_addr_wr[OSRAM_NUM];    
@@ -100,10 +100,10 @@ int sc_main(int argc, char *argv[]){
     }     
     for(int i = 0; i < PE_NUM; i++)
     {
-        dnnacc.weight_valid[i](weight_valid[i]);
-        dnnacc.last_channel[i](last_channel[i]);
-        dnnacc.add_prev[i](add_prev[i]); 
-        dnnacc.prev_psum[i](prev_psum[i]);
+        // dnnacc.weight_valid[i](weight_valid[i]);
+        // dnnacc.last_channel[i](last_channel[i]);
+        // dnnacc.add_prev[i](add_prev[i]); 
+        // dnnacc.prev_psum[i](prev_psum[i]);
     }
     // for(int i = 0; i < OSRAM_NUM; i++)
     // {
@@ -125,6 +125,7 @@ int sc_main(int argc, char *argv[]){
     }
     sc_trace(tf, dmac1->src, "dmac.src");
     sc_trace(tf, dmac1->tgt, "dmac.tgt");
+    sc_trace(tf, dmac1->state, "dmac.state");
     sc_trace(tf, dmac1->length, "dmac.length");
     sc_trace(tf, dmac1->DMA_start, "dmac.DMA_start");
     sc_trace(tf, dmac1->data_valid, "dmac.data_valid");
@@ -167,7 +168,7 @@ int sc_main(int argc, char *argv[]){
     {
         sc_trace(tf, dnnacc.ibank[i].data_i, "dnnacc.ibank("+to_string(i)+").data_i("+to_string(0)+")");
         for(int j = 0; j < ISRAMbank_element; j++)
-        sc_trace(tf, dnnacc.ibank[i].data[j], "dnnacc.ibank("+to_string(i)+").data("+to_string(j)+")");
+            sc_trace(tf, dnnacc.ibank[i].data[j], "dnnacc.ibank("+to_string(i)+").data("+to_string(j)+")");
         sc_trace(tf, dnnacc.ibank[i].data_o, "dnnacc.ibank("+to_string(i)+").data_o");
     }
     sc_trace(tf, dnnacc.controller.state, "dnnacc.controller.state");
@@ -183,8 +184,13 @@ int sc_main(int argc, char *argv[]){
     sc_trace(tf, dnnacc.osram[0].CS, "osram.osram_cs");
     sc_trace(tf, dnnacc.osram[0].read_write, "osram.osram_read_write");
     sc_trace(tf, dnnacc.osram[0].data_i, "osram.osram_data_i");
-    sc_trace(tf, dnnacc.osram[0].O_SRAMdata[0], "osram.o_sramdata[0]");
-    
+    sc_trace(tf, dnnacc.osram[0].data_o, "osram.osram_data_o");
+
+    for(int i = 0; i < (64*64); i++)
+        sc_trace(tf, dnnacc.osram[0].O_SRAMdata[i], "osram.o_sramdata("+to_string(i)+")");
+    sc_trace(tf, dnnacc.osram[0].addr_w, "osram.addr_w");
+    sc_trace(tf, dnnacc.osram[0].addr_r, "osram.addr_r");
+
     for (int i = 0; i < REG_NUM; i++)
     {
         sc_trace(tf, dnnacc.regarray.reg[i], "reg"+to_string(i)+")");
@@ -207,7 +213,15 @@ int sc_main(int argc, char *argv[]){
     sc_trace(tf, dnnacc.controller.shift_count_Reg, "dnnacc.controller.shift_count_Reg");
     sc_trace(tf, dnnacc.controller.store_col_index, "dnnacc.controller.store_col_index");
     sc_trace(tf, dnnacc.controller.pe_state, "dnnacc.controller.pe_state");
+    sc_trace(tf, dnnacc.controller.length, "dnnacc.controller.length");
+    sc_trace(tf, dnnacc.controller.dma_count_Reg, "dnnacc.controller.dma_count_Reg");
     sc_trace(tf, dnnacc.controller.write_result_Reg, "dnnacc.controller.write_result_Reg");
+    sc_trace(tf, dnnacc.controller.conv_count_Reg, "dnnacc.controller.conv_count_Reg");
+    sc_trace(tf, dnnacc.controller.osram_addr_Reg, "dnnacc.controller.osram_addr_Reg");
+    sc_trace(tf, dnnacc.controller.wbank_addr_Reg, "dnnacc.controller.wbank_addr_Reg");
+    sc_trace(tf, dnnacc.controller.read_write, "dnnacc.controller.read_write");
+    sc_trace(tf, dnnacc.controller.h_Reg, "dnnacc.controller.h_Reg");
+
     //Start Simulation
     rst.write(1);
     start.write(0);
@@ -228,7 +242,7 @@ int sc_main(int argc, char *argv[]){
     start.write(1);
     sc_start(10,SC_NS);
     start.write(0);
-    sc_start(10000,SC_NS);
+    sc_start(100000,SC_NS);
     // for(int i = 0; i < ISRAM_BANK_NUM; i++)
     // {
     //     // if(i == 0)
@@ -283,7 +297,11 @@ int sc_main(int argc, char *argv[]){
     //     //     cout << "total : " << dnnacc.pe[0].data_out << endl;
 
     // }
-   
+
+
+    //sc_trace(tf,  dnnacc.wsram[0].wbank[0].weight[0], "wbank[0].weight[0]");
+    // sc_trace(tf,  dnnacc.wsram[0].wbank[1].weight[0], "dnnacc.wsram[0].wbank[1].weight[0]");
+    // sc_trace(tf,  dnnacc.wsram[0].wbank[2].weight[0], "dnnacc.wsram[0].wbank[2].weight[0]");
 
     cout << "////////////WSRAM0///////////// " << endl;
     for(int i = 0; i < 6; i++)
@@ -316,18 +334,18 @@ int sc_main(int argc, char *argv[]){
 
     cout << "------------------------------------------" << endl;
     //load input 
-    int *golden = new int[100];
+    int *golden = new int[3844];
     int err = 0;
     ifstream fin("conv_testdata/output.txt");
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 3844; i++){
         int temp;
         fin >> temp;
         golden[i] = temp;
         if (golden[i] == dnnacc.osram[0].O_SRAMdata[i])
-            cout << "golden : " << golden[i] << " , " << "output : " << dnnacc.osram[0].O_SRAMdata[i] << " pass " << endl;
+            cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dnnacc.osram[0].O_SRAMdata[i] << " pass " << endl;
         else
         {
-            cout << "golden : " << golden[i] << " , " << "output : " << dnnacc.osram[0].O_SRAMdata[i] << " error " << endl;
+            cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dnnacc.osram[0].O_SRAMdata[i] << " error " << endl;
             err++;
         }
         //cout << "index : " << i << " data : " << golden[i] << endl;

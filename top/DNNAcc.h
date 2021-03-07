@@ -82,15 +82,15 @@ SC_MODULE(DNNAcc)
     sc_signal<sc_int<DATA_WIDTH> > W_data_o[WSRAM_NUM][WSRAM_BANK_NUM];  
 
     //PE
-    sc_in<bool>       weight_valid[PE_NUM];
-    sc_in<bool>       last_channel[PE_NUM];
-    sc_in<bool>           add_prev[PE_NUM];         
-    sc_in<sc_int<PSUM_WIDTH> >    prev_psum[PE_NUM];
+    // sc_in<bool>       weight_valid[PE_NUM];
+    // sc_in<bool>       last_channel[PE_NUM];
+    sc_signal<bool>           add_prev;         
+    //sc_signal<sc_int<PSUM_WIDTH> >    prev_psum[PE_NUM];
     sc_signal<sc_int<PSUM_WIDTH> >   pe_data_out[PE_NUM];
 
     //OutputSRAM
     sc_signal<bool>    O_CS[OSRAM_NUM];
-    sc_signal<sc_uint<2> >     read_write[OSRAM_NUM];  	
+    sc_signal<sc_uint<2> >     read_write;  	
     // sc_in<bool>            O_WEB[OSRAM_NUM];             
     sc_signal<sc_uint<OSRAM_ADDR_LEN> > O_addr_w[OSRAM_NUM];    
     sc_signal<sc_uint<OSRAM_ADDR_LEN> >     O_addr_r[OSRAM_NUM];   
@@ -197,9 +197,9 @@ SC_MODULE(DNNAcc)
                 pe[i].input[j](PE_data_i[j]);
                 pe[i].weight[j](W_data_o[i][j]);
             } 
-            pe[i].weight_valid(weight_valid[i]);
-            pe[i].last_channel(last_channel[i]);
-            pe[i].add_prev(add_prev[i]); 
+            // pe[i].weight_valid(weight_valid[i]);
+            // pe[i].last_channel(last_channel[i]);
+            pe[i].add_prev(add_prev); 
             pe[i].prev_psum(O_data_o[i]);
             pe[i].data_out(pe_data_out[i]);
         }
@@ -210,13 +210,13 @@ SC_MODULE(DNNAcc)
             osram[i].clk(clk);
             osram[i].rst(rst);
             osram[i].CS(O_CS[i]);
-            osram[i].read_write(read_write[i]);
+            osram[i].read_write(read_write);
             osram[i].addr_w(O_addr_w[i]);
             osram[i].addr_r(O_addr_r[i]);
             osram[i].data_i(pe_data_out[i]);
             osram[i].data_o(O_data_o[i]);
         }
-
+        
         //Controller
         controller.clk(clk);
         controller.rst(rst);
@@ -256,12 +256,13 @@ SC_MODULE(DNNAcc)
             controller.W_bank_sel[i](W_bank_sel[i]);
             controller.W_data_i[i](W_data_i[i]);
         }  
+        controller.add_prev(add_prev);
+        controller.read_write(read_write);
         for(int i = 0; i < OSRAM_NUM; i++)
         {
             controller.O_CS[i](O_CS[i]);
-            controller.read_write[i](read_write[i]);
             controller.O_addr_w[i](O_addr_w[i]);
-
+            controller.O_addr_r[i](O_addr_r[i]);
         }      
     }
 };  
