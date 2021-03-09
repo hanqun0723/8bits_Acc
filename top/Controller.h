@@ -44,8 +44,10 @@ SC_MODULE(Controller)
     // sc_in<sc_int<32> > tile_h;
 
     //DMAC
+    sc_out<sc_uint<2> >  dma_type;
     sc_out<sc_uint<32> > src;
     sc_out<sc_uint<32> > tgt;
+    sc_out<sc_uint<32> > osram_id; //select data from output sram
     sc_out<sc_uint<32> > length;
     sc_out<bool> DMA_start; 
     sc_in<bool>      data_valid;
@@ -100,6 +102,7 @@ SC_MODULE(Controller)
     sc_signal<sc_uint<32> > f_num_Reg;      //number of filter
     sc_signal<sc_uint<32> > stride_Reg;
     
+    int out_length;
 
     //address control
     sc_signal<sc_uint<32> > h_Reg;
@@ -111,6 +114,7 @@ SC_MODULE(Controller)
     sc_signal<sc_uint<32> > ibank_addr_Reg;
     sc_signal<sc_uint<32> > wbank_addr_Reg;
     sc_signal<sc_uint<32> > osram_addr_Reg;
+    sc_signal<sc_uint<32> > osram_id_Reg;
 
     sc_signal<sc_uint<32> > tile_h_Reg;
     sc_signal<sc_uint<32> > tile_w_Reg;
@@ -119,7 +123,7 @@ SC_MODULE(Controller)
     sc_signal<sc_uint<32> > store_col_index_Reg;
     sc_signal<sc_uint<32> > shift_count_Reg;
     sc_signal<bool> prev_store_Reg;
-    sc_signal<sc_uint<32> > write_result_Reg;
+    sc_signal<bool> write_result_Reg;
     sc_signal<sc_uint<32> > dma_count_Reg;
     sc_signal<sc_uint<32> > conv_count_Reg;
     
@@ -133,13 +137,17 @@ SC_MODULE(Controller)
     /**************************Inner data**************************/
 
     sc_signal<sc_uint<32> > state;
-    sc_signal<sc_uint<32> > dma_state;
+
+    sc_signal<sc_uint<32> > dma_read_state;
+    sc_signal<sc_uint<32> > dma_write_state;
     sc_signal<sc_uint<32> > pe_state;
     sc_signal<sc_uint<32> > read_data_state;
 
 
     void do_Controller();
     void do_dmaRead();
+    void do_dmaWrite();
+
     void do_startPE();
     void do_reset();
 

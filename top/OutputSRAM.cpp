@@ -44,7 +44,6 @@ void OutputSRAM::do_OutputSRAM()
             {    
                 case O_READ:
                     
-                    cout << "addr_Read!!!" << endl; 
                     data_o.write(O_SRAMdata[addr_r.read()]);
 
                 break;

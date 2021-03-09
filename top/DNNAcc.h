@@ -41,12 +41,16 @@ SC_MODULE(DNNAcc)
     sc_in<bool>         rst;
 
     //DMAC
-    sc_in<sc_int<32> > read_data;
-    sc_in<bool> data_valid;
+    sc_out<sc_uint<2> >  dma_type;
     sc_out<sc_uint<32> > src;
     sc_out<sc_uint<32> > tgt;
+    sc_out<sc_uint<32> > osram_id;
     sc_out<sc_uint<32> > length;
+    sc_out<sc_int<OSRAM_DATA_WIDTH> > osram_data[OSRAM_NUM];
     sc_out<bool> DMA_start; 
+
+    sc_in<sc_int<32> > read_data;
+    sc_in<bool> data_valid;
     sc_in<bool> DMA_irt;
     sc_out<bool>  DMA_irtclr;
 
@@ -110,6 +114,8 @@ SC_MODULE(DNNAcc)
     sc_vector<OutputSRAM> osram;
     Controller controller;
 
+    void propagate();
+
     SC_CTOR(DNNAcc) : ibank("ibank", ISRAM_BANK_NUM),
                       sram_bus("sram_bus"),
                       regarray("regarray"),
@@ -119,6 +125,10 @@ SC_MODULE(DNNAcc)
                       osram("osram", OSRAM_NUM),
                       controller("controller")
     {
+        SC_METHOD(propagate);
+        for(int i = 0; i < OSRAM_NUM; i++)
+            sensitive << O_data_o[i];
+
         //Input SRAM
         for(int i = 0; i < ISRAM_BANK_NUM; i++)
         {
@@ -215,19 +225,26 @@ SC_MODULE(DNNAcc)
             osram[i].addr_r(O_addr_r[i]);
             osram[i].data_i(pe_data_out[i]);
             osram[i].data_o(O_data_o[i]);
+            //osram[i].data_o(osram_data[i]);
+            // to DMAC
+            //osram[i].data_o(osram_data[i]);
+            //osram_data[i](O_data_o[i]);
+            //O_data_o[i](osram_data[i]);
         }
-        
+
         //Controller
         controller.clk(clk);
         controller.rst(rst);
         controller.start(start);
 
+        controller.dma_type(dma_type);
         controller.src(src);
         controller.tgt(tgt);
+        controller.osram_id(osram_id);
         controller.length(length);
         controller.DMA_start(DMA_start);
-        controller.read_data(read_data);
         controller.data_valid(data_valid);
+        controller.read_data(read_data);
         controller.DMA_irt(DMA_irt);
         controller.DMA_irtclr(DMA_irtclr);
 

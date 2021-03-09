@@ -29,8 +29,9 @@
 //~~~~~~~~
 //  DRAM
 //~~~~~~~~
-#define MEM_SIZE (0x2000000) //MEM_SIZE (0x2000000)bytes,Configuable, uint32_t mem[MEMSIZE] 
-
+#define MEM_SIZE (0x10000000) //MEM_SIZE (0x2000000)bytes,Configuable, uint32_t mem[MEMSIZE] 
+//0x10000000 = 256MB
+//addr: 0x0000000 ~ 0x4000000
 
 #define ROW_BIT (11)
 #define COLUMN_BIT (10)

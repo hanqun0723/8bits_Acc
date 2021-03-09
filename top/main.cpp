@@ -4,6 +4,8 @@
 #include "systemc.h"
 #include "Acc_cofig.h"
 #include "string.h"
+#include "./conv_testdata/param.h"
+
 using namespace std;
 
 int sc_main(int argc, char *argv[]){
@@ -11,9 +13,12 @@ int sc_main(int argc, char *argv[]){
     sc_clock clk("clk", 10);
     sc_signal<bool> rst;
 
+    sc_signal<sc_uint<2> >  dma_type;
     sc_signal<sc_uint<32> > src;
     sc_signal<sc_uint<32> > tgt;
+    sc_signal<sc_uint<32> > osram_id;
     sc_signal<sc_uint<32> > length;
+    sc_signal<sc_int<OSRAM_DATA_WIDTH> > osram_data[OSRAM_NUM];
     sc_signal<bool> DMA_start; 
 
     sc_signal<sc_int<32> > read_data;
@@ -53,9 +58,13 @@ int sc_main(int argc, char *argv[]){
     dmac1->socket_m.bind(dram1->socket);
     dmac1->clk(clk);
     dmac1->rst(rst);
+    dmac1->dma_type(dma_type);
     dmac1->src(src);
     dmac1->tgt(tgt);
+    dmac1->osram_id(osram_id);
     dmac1->length(length);
+    for(int i = 0; i < OSRAM_NUM; i++)
+        dmac1->osram_data[i](osram_data[i]);
     dmac1->DMA_start(DMA_start);
     dmac1->read_data(read_data);
     dmac1->data_valid(data_valid);
@@ -64,12 +73,16 @@ int sc_main(int argc, char *argv[]){
 
     dnnacc.clk(clk);
     dnnacc.rst(rst);
-    dnnacc.read_data(read_data);
-    dnnacc.data_valid(data_valid);
+    dnnacc.dma_type(dma_type);
     dnnacc.src(src);
     dnnacc.tgt(tgt);
+    dnnacc.osram_id(osram_id);
     dnnacc.length(length);
+    for(int i = 0; i < OSRAM_NUM; i++)
+        dnnacc.osram_data[i](osram_data[i]);    
     dnnacc.DMA_start(DMA_start);
+    dnnacc.read_data(read_data);
+    dnnacc.data_valid(data_valid);
     dnnacc.DMA_irt(DMA_irt);
     dnnacc.DMA_irtclr(DMA_irtclr);
     
@@ -119,7 +132,11 @@ int sc_main(int argc, char *argv[]){
 
     //add trace signal
     //sc_trace(tf, iSRAM_bank.clk       ,"iSRAM_bank.clk");
-    for(int i = 0; i < 64; i++)
+    for(int i = (DRAM_INPUT_BASE/4); i < (DRAM_INPUT_BASE/4 + 20); i++)
+    {
+        sc_trace(tf, dram1->mem[i], "dram1.mem("+to_string(i)+")");
+    }
+    for(int i = (DRAM_OUTPUT_BASE/4); i < (DRAM_OUTPUT_BASE/4 + 10); i++)
     {
         sc_trace(tf, dram1->mem[i], "dram1.mem("+to_string(i)+")");
     }
@@ -203,7 +220,8 @@ int sc_main(int argc, char *argv[]){
     for (int i =0; i < REG_NUM; i++)
         sc_trace(tf, dnnacc.controller.store_reg[i], "store_reg"+to_string(i)+")");
 
-    sc_trace(tf, dnnacc.controller.dma_state, "dnnacc.controller.dma_state");
+    sc_trace(tf, dnnacc.controller.dma_read_state, "dnnacc.controller.dma_read_state");
+    sc_trace(tf, dnnacc.controller.dma_write_state, "dnnacc.controller.dma_write_state");
     sc_trace(tf, dnnacc.controller.data_valid, "dnnacc.controller.data_valid");
     //sc_trace(tf, dnnacc.controller.read_data, "dnnacc.controller.read_data");
     sc_trace(tf, dnnacc.controller.ibank_addr_Reg, "dnnacc.controller.ibank_addr_Reg");
@@ -221,6 +239,8 @@ int sc_main(int argc, char *argv[]){
     sc_trace(tf, dnnacc.controller.wbank_addr_Reg, "dnnacc.controller.wbank_addr_Reg");
     sc_trace(tf, dnnacc.controller.read_write, "dnnacc.controller.read_write");
     sc_trace(tf, dnnacc.controller.h_Reg, "dnnacc.controller.h_Reg");
+    sc_trace(tf, dnnacc.controller.w_Reg, "dnnacc.controller.w_Reg");
+    sc_trace(tf, dnnacc.controller.c_Reg, "dnnacc.controller.c_Reg");
 
     //Start Simulation
     rst.write(1);
@@ -242,7 +262,8 @@ int sc_main(int argc, char *argv[]){
     start.write(1);
     sc_start(10,SC_NS);
     start.write(0);
-    sc_start(100000,SC_NS);
+    sc_start(200000,SC_NS);
+
     // for(int i = 0; i < ISRAM_BANK_NUM; i++)
     // {
     //     // if(i == 0)
@@ -334,22 +355,38 @@ int sc_main(int argc, char *argv[]){
 
     cout << "------------------------------------------" << endl;
     //load input 
-    int *golden = new int[3844];
+    int size = OUTPUT_H * OUTPUT_W * OUTPUT_C;
+    int *golden = new int[size];
     int err = 0;
     ifstream fin("conv_testdata/output.txt");
-    for(int i = 0; i < 3844; i++){
+
+    for(int i = 0; i < (OUTPUT_W * OUTPUT_H * OUTPUT_C); i++){
         int temp;
         fin >> temp;
         golden[i] = temp;
-        if (golden[i] == dnnacc.osram[0].O_SRAMdata[i])
-            cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dnnacc.osram[0].O_SRAMdata[i] << " pass " << endl;
+        if (golden[i] == (dram1->mem[DRAM_OUTPUT_BASE/4 + i]))
+            //cout << "";
+            cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dram1->mem[(DRAM_OUTPUT_BASE/4) + i] << " pass " << endl;
         else
         {
-            cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dnnacc.osram[0].O_SRAMdata[i] << " error " << endl;
+            cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dram1->mem[(DRAM_OUTPUT_BASE/4) + i] << " error " << endl;
             err++;
         }
-        //cout << "index : " << i << " data : " << golden[i] << endl;
     }
+    // for(int i = 0; i < 64; i++){
+    //     int temp;
+    //     fin >> temp;
+    //     golden[i] = temp;
+    //     if (golden[i] == dnnacc.osram[0].O_SRAMdata[i])
+    //         cout << "";
+    //         //cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dnnacc.osram[0].O_SRAMdata[i] << " pass " << endl;
+    //     else
+    //     {
+    //         cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dnnacc.osram[0].O_SRAMdata[i] << " error " << endl;
+    //         err++;
+    //     }
+    //     //cout << "index : " << i << " data : " << golden[i] << endl;
+    // }
     fin.close();
     if(err == 0){
         printf("\n");
@@ -368,7 +405,7 @@ int sc_main(int argc, char *argv[]){
         printf("\n");
         printf("        ****************************               \n");
         printf("        **                        **       |\__||  \n");
-        printf("        **  OOPS!!                **      / X,X  | \n");
+        printf("        **  OOPS!!                **      / >,<  | \n");
         printf("        **                        **    /_____   | \n");
         printf("        **  Simulation Failed!!   **   /^ ^ ^ \\  |\n");
         printf("        **                        **  |^ ^ ^ ^ |w| \n");

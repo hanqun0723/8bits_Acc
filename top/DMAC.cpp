@@ -32,19 +32,27 @@ void DMAC::do_DMAC()
         switch (state.read())
         {
 
-            case DMA_IDLE:                
+            case DMA_IDLE:{      
                 do_reset();
                 if (DMA_start.read())
                 {
-                    src_Reg.write(src);
-                    tgt_Reg.write(tgt);
-                    length_Reg.write(length);
-                    state = DMA_READ;
+                    if (dma_type.read() == DMA_READ)
+                    {
+                        src_Reg.write(src);
+                        length_Reg.write(length);
+                        state = DMA_READ;
+                    }
+                    else if (dma_type.read() == DMA_WRITE)
+                    {
+                        tgt_Reg.write(tgt);
+                        length_Reg.write(length);
+                        state = DMA_WRITE;                        
+                    }
                 }
                 data_valid.write(0);
-            break;
+            }break;
             
-            case DMA_READ:  //Read to Input SRAM or Weight SRAM
+            case DMA_READ:{  //Read to Input SRAM or Weight SRAM
 
                 if (count_Reg.read() == length_Reg.read())
                 {
@@ -56,12 +64,6 @@ void DMAC::do_DMAC()
                 //Read Input data
                 if (count_Reg.read() < length_Reg.read())     //Read DRAM
                 {
-                    // if (count_Reg.read() == length_Reg.read() - 1)
-                    // {
-                    //     state.write(DMA_IRQ);            
-                    //     data_valid.write(0);
-                    //     DMA_irt.write(1);
-                    // }
                     trans_m->set_command( tlm::TLM_READ_COMMAND );
                     trans_m->set_address( src_Reg.read() + (count_Reg.read() * 4) );
                     trans_m->set_data_ptr(
@@ -75,27 +77,49 @@ void DMAC::do_DMAC()
                     socket_m->b_transport( *trans_m, delay ); 
                     read_data.write(data_m); 
                     data_valid.write(1);
-                    //cout << sc_time_stamp() << "data : " << data_m << endl;
                     count_Reg.write(count_Reg.read() + 1);
-                    // cout << "count[" << count_Reg.read() << "]  ";
-                    // //cout << data_m << endl;
-                    // cout << read_data.read().range(7,0) << " " << read_data.read().range(15,8) << " " << read_data.read().range(23,16) << " " << read_data.read().range(31,24) << endl; 
                 }
-            break;
+            }break;
 
-            case DMA_WRITE:
+            case DMA_WRITE:{
 
-            break;
+                //cout << "DMA_WRITE" << endl;
+                
+                if (count_Reg.read() == length_Reg.read())
+                {
+                    state.write(DMA_IRQ);            
+                    DMA_irt.write(1);
+                }
 
-            case DMA_IRQ:
+                if (count_Reg.read() < length_Reg.read())     //Read DRAM
+                {
+                    data_m = osram_data[osram_id.read()].read();
+                    trans_m->set_command( tlm::TLM_WRITE_COMMAND );
+                    trans_m->set_address( tgt_Reg.read() + (count_Reg.read() * 4) );
+                    trans_m->set_data_ptr(
+                        reinterpret_cast<unsigned char*>(&data_m) );
+                    trans_m->set_data_length(4);
+                    trans_m->set_streaming_width(4);
+                    trans_m->set_byte_enable_ptr(0);
+                    trans_m->set_dmi_allowed(false);
+                    trans_m->set_response_status(
+                        tlm::TLM_INCOMPLETE_RESPONSE );
+                    socket_m->b_transport( *trans_m, delay ); 
+                    count_Reg.write(count_Reg.read() + 1);
+                }
 
-                //DMA_irt.write(1);
+            }break;
+
+            case DMA_IRQ:{
+
                 if (DMA_irtclr.read())
                 {
                     state = DMA_IDLE;
+                    do_reset();
                     DMA_irt.write(0);
                 }
-            break;
+
+            }break;
             default:
                 break;
         }

@@ -37,15 +37,38 @@ SC_MODULE(DRAM){
         ///////////////Read input data///////////////
         ifstream fin("./conv_testdata/input.txt");
 
-        for(int i = DRAM_INPUT_BASE; i < (INPUT_H * INPUT_W * INPUT_C); i++){
-            if (i % 4 < 4)
-                fin >> tmp.range( (3 - (i % 4)) * 8 + 7,(3 - (i % 4)) * 8);
-                
-            if ( ((i + 1) % 4) == 0 /*|| ( (i + 1) == (F_SIZE * F_SIZE * INPUT_C * F_NUM))*/){
-                mem[i/4] = tmp;
-                tmp = 0;
+        for (int k = 0; k < INPUT_C; k++)
+        {
+            for (int j = 0; j < INPUT_H; j++)
+            {
+                for (int i = 0; i < (INPUT_W + ROW_PADD); i++)
+                {
+                    //alignment 4
+                    if ( (i % 4 < 4) && (i < INPUT_W) )
+                        fin >> tmp.range( (3 - (i % 4)) * 8 + 7,(3 - (i % 4)) * 8);
+                    else 
+                        tmp.range( (3 - (i % 4)) * 8 + 7,(3 - (i % 4)) * 8) = 0;
+                    
+                    if ( ((i + 1) % 4) == 0 /*|| ( (i + 1) == (F_SIZE * F_SIZE * INPUT_C * F_NUM))*/){
+                        int bytes_offset = (k * INPUT_H * (INPUT_W + ROW_PADD)) + (j * (INPUT_W + ROW_PADD)) + i;
+                        mem[bytes_offset/4] = tmp;
+                        tmp = 0;
+                    }
+                }
             }
         }
+
+        // for(int i = 0; i < (INPUT_H * INPUT_W * INPUT_C); i++)
+        //     cout << "mem[" <<  i  << "] : " << mem[i] << endl;
+        // for(int i = DRAM_INPUT_BASE; i < (INPUT_H * INPUT_W * INPUT_C); i++){
+        //     if (i % 4 < 4)
+        //         fin >> tmp.range( (3 - (i % 4)) * 8 + 7,(3 - (i % 4)) * 8);
+                
+        //     if ( ((i + 1) % 4) == 0 /*|| ( (i + 1) == (F_SIZE * F_SIZE * INPUT_C * F_NUM))*/){
+        //         mem[i/4] = tmp;
+        //         tmp = 0;
+        //     }
+        // }
         fin.close();    
 
         ///////////////Read Weight///////////////

@@ -48,7 +48,8 @@
 #define ACC_IDLE           (0)
 #define ACC_DMA_READ       (1)
 #define ACC_START_PE      (2)
-#define ACC_FINISH        (3)
+#define ACC_DMA_WRITE     (3)
+#define ACC_FINISH        (4)
 
 /******PE******/
 #define READ_ISRAM  (0)
@@ -67,8 +68,13 @@
 #define DMA_INPUT_CONFIG  (2)
 #define DMA_READ_TO_ISRAM (3)
 
+#define DMA_OUTPUT_CONFIG (0)
+#define DMA_WRITE_TO_DRAM  (1)
+
+
 /******DRAM BASE******/
-#define DRAM_INPUT_BASE (0x00000000) 
-#define DRAM_WEIGHT_BASE (0x00006000)
+#define DRAM_INPUT_BASE  (0x00000000) //64MB size
+#define DRAM_WEIGHT_BASE (0x01000000) //64MB size
+#define DRAM_OUTPUT_BASE (0x02000000) //128MB size
 
 
