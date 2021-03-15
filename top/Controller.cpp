@@ -190,12 +190,22 @@ void Controller::do_dmaRead()
                 
                 if ( (c_Reg.read() < input_c_Reg.read()) && (h_Reg.read() == tile_h_Reg.read() ) )
                 {
-                    c_Reg.write(c_Reg.read() + 1);
-                    h_Reg.write(0);
+                    if (c_Reg.read() == (input_c_Reg.read() - 1))
+                    {
+                        c_Reg.write(0);
+                        h_Reg.write(0);
+                        w_Reg.write(w_Reg.read() + tile_w_Reg.read());
+                    }
+                    else
+                    {
+                        c_Reg.write(c_Reg.read() + 1);
+                        h_Reg.write(0);
+                    }
                 }
                 else if (c_Reg.read() == input_c_Reg.read())
                 {
                     w_Reg.write(w_Reg.read() + tile_w_Reg.read());
+                    c_Reg.write(0);
                 }
                 else 
                     h_Reg.write(h_Reg.read() + 1);
@@ -300,17 +310,26 @@ void Controller::do_dmaWrite()
     
         case DMA_WRITE_TO_DRAM : {
 
+            if (DMA_irt.read())
+            {
+                dma_read_state = DMA_OUTPUT_CONFIG;
+                DMA_irtclr.write(1);
+                dma_count_Reg.write(0);
+            }
+            else
+            {
+                dma_count_Reg.write(dma_count_Reg.read() + 1);
+                for (int i = 0; i < OSRAM_NUM; i++)
+                {
+                        O_CS[i] = 1;
+                        read_write = 1;
+                        O_addr_r[i] =  dma_count_Reg.read();
+                }
+            }
             //cout << "DMA_WRITE_TO_DRAM" << endl;
-            dma_count_Reg.write(dma_count_Reg.read() + 1);
+
 
         }break;
-    }
-
-    for (int i = 0; i < OSRAM_NUM; i++)
-    {
-            O_CS[i] = 1;
-            read_write = 1;
-            O_addr_r[i] =  dma_count_Reg.read();
     }
 
 }
@@ -628,8 +647,11 @@ void Controller::do_Controller()
 
                 out_length = (tile_h_Reg.read() - f_size_Reg.read() + 1) * (tile_w_Reg.read() - f_size_Reg.read() + 1);
 
-                if ( (c_Reg.read() == input_c_Reg.read()) &&  (osram_addr_Reg.read() == out_length))
+                //wait for next tile move to ISRAM
+                if ( (c_Reg.read() == 0) && (h_Reg.read() == input_h_Reg.read()) && DMA_irt.read())
                     state = ACC_DMA_WRITE;
+                // if ( (c_Reg.read() == input_c_Reg.read()) &&  (osram_addr_Reg.read() == out_length))
+                //     state = ACC_DMA_WRITE;
 
                 do_startPE();
 
@@ -637,7 +659,15 @@ void Controller::do_Controller()
 
             case ACC_DMA_WRITE: {
                 
-                do_dmaWrite();
+                if (DMA_irt.read() && (dma_write_state.read() != DMA_OUTPUT_CONFIG) )
+                {
+                    if ( (c_Reg.read() == INPUT_C) && (h_Reg.read() == INPUT_H) && (w_Reg.read() == INPUT_W) )
+                        state = ACC_FINISH;
+                    else
+                        state = ACC_DMA_READ;
+                }
+                else
+                    do_dmaWrite();
 
             }break;
 

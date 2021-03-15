@@ -262,7 +262,7 @@ int sc_main(int argc, char *argv[]){
     start.write(1);
     sc_start(10,SC_NS);
     start.write(0);
-    sc_start(200000,SC_NS);
+    sc_start(250000,SC_NS);
 
     // for(int i = 0; i < ISRAM_BANK_NUM; i++)
     // {

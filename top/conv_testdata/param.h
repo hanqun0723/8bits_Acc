@@ -1,6 +1,6 @@
-#define INPUT_W (46)
-#define INPUT_H (46)
-#define INPUT_C (1)
+#define INPUT_W (108)
+#define INPUT_H (64)
+#define INPUT_C (3)
 
 #define F_SIZE (3)
 #define F_NUM  (1)
