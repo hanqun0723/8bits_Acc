@@ -54,16 +54,17 @@ void DMAC::do_DMAC()
             
             case DMA_READ:{  //Read to Input SRAM or Weight SRAM
 
-                if (count_Reg.read() == length_Reg.read())
-                {
-                    state.write(DMA_IRQ);            
-                    data_valid.write(0);
-                    DMA_irt.write(1);
-                }
+                // if (count_Reg.read() == length_Reg.read())
+                // {
+                //     state.write(DMA_IRQ);            
+                //     data_valid.write(0);
+                //     DMA_irt.write(1);
+                // }
 
                 //Read Input data
                 if (count_Reg.read() < length_Reg.read())     //Read DRAM
                 {
+                    //data_valid.write(0);
                     trans_m->set_command( tlm::TLM_READ_COMMAND );
                     trans_m->set_address( src_Reg.read() + (count_Reg.read() * 4) );
                     trans_m->set_data_ptr(
@@ -79,18 +80,18 @@ void DMAC::do_DMAC()
                     data_valid.write(1);
                     count_Reg.write(count_Reg.read() + 1);
                 }
+                else 
+                {
+                    state.write(DMA_IRQ);            
+                    data_valid.write(1);
+                    DMA_irt.write(1);       
+                }
+
             }break;
 
             case DMA_WRITE:{
 
                 //cout << "DMA_WRITE" << endl;
-                
-                if (count_Reg.read() == length_Reg.read())
-                {
-                    state.write(DMA_IRQ);            
-                    DMA_irt.write(1);
-                }
-
                 if (count_Reg.read() < length_Reg.read())     //Read DRAM
                 {
                     data_m = osram_data[osram_id.read()].read();
@@ -107,11 +108,17 @@ void DMAC::do_DMAC()
                     socket_m->b_transport( *trans_m, delay ); 
                     count_Reg.write(count_Reg.read() + 1);
                 }
+                else
+                {
+                    state.write(DMA_IRQ);            
+                    DMA_irt.write(1);
+                }
 
             }break;
 
             case DMA_IRQ:{
 
+                data_valid.write(0);
                 if (DMA_irtclr.read())
                 {
                     state = DMA_IDLE;

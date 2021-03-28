@@ -241,7 +241,8 @@ int sc_main(int argc, char *argv[]){
     sc_trace(tf, dnnacc.controller.h_Reg, "dnnacc.controller.h_Reg");
     sc_trace(tf, dnnacc.controller.w_Reg, "dnnacc.controller.w_Reg");
     sc_trace(tf, dnnacc.controller.c_Reg, "dnnacc.controller.c_Reg");
-
+    sc_trace(tf, dnnacc.controller.tile_w_Reg, "dnnacc.controller.tile_w_Reg");
+    sc_trace(tf, dnnacc.controller.tile_h_Reg, "dnnacc.controller.tile_h_Reg");
     //Start Simulation
     rst.write(1);
     start.write(0);
