@@ -50,7 +50,7 @@ SC_MODULE(Controller)
     sc_out<sc_uint<32> > osram_id; //select data from output sram
     sc_out<sc_uint<32> > length;
     sc_out<bool> DMA_start; 
-    sc_in<bool>      data_valid;
+    sc_in<bool>      dram_done;
     sc_in<sc_int<32> > read_data;
     sc_in<bool>      DMA_irt;
     sc_out<bool>     DMA_irtclr;
@@ -92,7 +92,8 @@ SC_MODULE(Controller)
     // sc_out<bool>            O_WEB[OSRAM_NUM];             
     sc_out<sc_uint<OSRAM_ADDR_LEN> > O_addr_w[OSRAM_NUM];    
     sc_out<sc_uint<OSRAM_ADDR_LEN> > O_addr_r[OSRAM_NUM];  
-
+    sc_out<bool> osram_valid;
+    sc_in<bool> dma_resp;
 
     //control register
     sc_signal<sc_uint<32> > input_h_Reg;
@@ -103,7 +104,7 @@ SC_MODULE(Controller)
     sc_signal<sc_uint<32> > stride_Reg;
     
     int out_length;
-
+    sc_int<32> osram_req;
     //address control
     sc_signal<sc_uint<32> > h_Reg;
     sc_signal<sc_uint<32> > w_Reg;
@@ -126,6 +127,7 @@ SC_MODULE(Controller)
     sc_signal<bool> write_result_Reg;
     sc_signal<sc_uint<32> > dma_count_Reg;
     sc_signal<sc_uint<32> > conv_count_Reg;
+    sc_signal<sc_uint<32> > tile_overlap_Reg;
     
     sc_uint<32> load_tile_width;
     sc_uint<32> load_tile_height;

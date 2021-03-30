@@ -47,10 +47,12 @@ SC_MODULE(DNNAcc)
     sc_out<sc_uint<32> > osram_id;
     sc_out<sc_uint<32> > length;
     sc_out<sc_int<OSRAM_DATA_WIDTH> > osram_data[OSRAM_NUM];
+    sc_out<bool> osram_valid;
+    sc_in<bool> dma_resp;
     sc_out<bool> DMA_start; 
 
     sc_in<sc_int<32> > read_data;
-    sc_in<bool> data_valid;
+    sc_in<bool> dram_done;
     sc_in<bool> DMA_irt;
     sc_out<bool>  DMA_irtclr;
 
@@ -243,7 +245,7 @@ SC_MODULE(DNNAcc)
         controller.osram_id(osram_id);
         controller.length(length);
         controller.DMA_start(DMA_start);
-        controller.data_valid(data_valid);
+        controller.dram_done(dram_done);
         controller.read_data(read_data);
         controller.DMA_irt(DMA_irt);
         controller.DMA_irtclr(DMA_irtclr);
@@ -281,6 +283,8 @@ SC_MODULE(DNNAcc)
             controller.O_addr_w[i](O_addr_w[i]);
             controller.O_addr_r[i](O_addr_r[i]);
         }      
+        controller.osram_valid(osram_valid);
+        controller.dma_resp(dma_resp);
     }
 };  
 #endif

@@ -1,24 +1,55 @@
+/** @file DRAM.h
+ *  @brief Function prototypes for the DRAM module.
+ *
+ *  This contains DRAM module
+ *
+ *  @Author: HarveyZeng (caslab), LanceHuang (caslab)
+ *
+ *  @bug No known bugs.
+ */
 #ifndef DRAM_H
 #define DRAM_H
 
-#include "systemc.h"
-#include "tlm.h"
-#include "tlm_utils/simple_target_socket.h"
-#include "ps_config.h"
 #include <fstream>
+#include <string>
+#include <sstream>
+#include "ps_config.h"
+#include "general_function.h"
+#include "tlm_utils/simple_target_socket.h"
+#include "tlm_utils/peq_with_cb_and_phase.h"
 #include "./conv_testdata/param.h"
 #include "Acc_cofig.h"
+
+// Needed for the simple_target_socket
+#define SC_INCLUDE_DYNAMIC_PROCESSES
+
+DECLARE_EXTENDED_PHASE(internal_ph);
 
 using namespace sc_core;
 using namespace sc_dt;
 using namespace std;
 
-SC_MODULE(DRAM){
-
+struct DRAM: sc_module {
+    
+    // TLM-2 socket, defaults to 32-bits wide, base protocol
     tlm_utils::simple_target_socket<DRAM> socket;
 
-    int32_t mem[MEM_SIZE/4]; // 256MB
-    sc_int<32> tmp;
+
+    // TLM-2 non-blocking transport method
+
+    virtual tlm::tlm_sync_enum nb_transport_fw( tlm::tlm_generic_payload& trans,
+            tlm::tlm_phase& phase, sc_time& delay );
+    void peq_cb(tlm::tlm_generic_payload& trans, const tlm::tlm_phase& phase);
+    tlm::tlm_sync_enum send_end_req(tlm::tlm_generic_payload& trans);
+    void send_response(tlm::tlm_generic_payload& trans);
+    int get_id();
+    uint32_t dram_id;
+    int   n_trans;
+    bool  response_in_progress;
+    tlm::tlm_generic_payload*  next_response_pending;
+    tlm::tlm_generic_payload*  end_req_pending;
+    tlm_utils::peq_with_cb_and_phase<DRAM> m_peq;
+    int32_t mem[MEM_SIZE/4]; // 256MB(8B * 0x2000000)
 
     // DRAM timing
     int calculate_delay(int addr);
@@ -26,14 +57,23 @@ SC_MODULE(DRAM){
     int get_row_index(int);
     void access(bool,uint32_t,unsigned int ,uint32_t*);
     int row_index;
-    void b_transport(tlm::tlm_generic_payload&, sc_time&);
+    sc_int<32> tmp;
 
-    SC_CTOR(DRAM) : socket("socket"){
-        // Register callback for incoming b_transport interface method call
-        socket.register_b_transport(this, &DRAM::b_transport);
+    SC_CTOR(DRAM)
+        : socket("socket")
+        , n_trans(0)
+        , response_in_progress(false)
+        , next_response_pending(0)
+        , end_req_pending(0)
+        , m_peq(this, &DRAM::peq_cb)
+    {
+        // Register callbacks for incoming interface method calls
+        socket.register_nb_transport_fw(this, &DRAM::nb_transport_fw);
+        dram_id = DRAM4_ID;
         row_index = 0xffffffff; // Initial value
-        for (int i = 0; i < MEM_SIZE/4; i++) 
+        for(int i=0; i<(MEM_SIZE/4); i++){
             mem[i] = 0;
+        }
         ///////////////Read input data///////////////
         ifstream fin("./conv_testdata/input.txt");
 
@@ -58,18 +98,7 @@ SC_MODULE(DRAM){
             }
         }
 
-        // for(int i = 0; i < (INPUT_H * INPUT_W * INPUT_C); i++)
-        //     cout << "mem[" <<  i  << "] : " << mem[i] << endl;
-        // for(int i = DRAM_INPUT_BASE; i < (INPUT_H * INPUT_W * INPUT_C); i++){
-        //     if (i % 4 < 4)
-        //         fin >> tmp.range( (3 - (i % 4)) * 8 + 7,(3 - (i % 4)) * 8);
-                
-        //     if ( ((i + 1) % 4) == 0 /*|| ( (i + 1) == (F_SIZE * F_SIZE * INPUT_C * F_NUM))*/){
-        //         mem[i/4] = tmp;
-        //         tmp = 0;
-        //     }
-        // }
-        fin.close();    
+        fin.close();  
 
         ///////////////Read Weight///////////////
         ifstream fweight("./conv_testdata/weight.txt");
@@ -84,10 +113,10 @@ SC_MODULE(DRAM){
             }
         }
         fin.close(); 
+        //////////////////////////////////////
 
-        // for(int i = DRAM_WEIGHT_BASE/4; i < DRAM_WEIGHT_BASE/4 + 10/*(MEM_SIZE/4)*/; i++)
-        //     cout << "mem[" << i << "] : " << mem[i] << endl;          
+    }
 
-    } 
 };
+
 #endif

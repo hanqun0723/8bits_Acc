@@ -1,46 +1,25 @@
-/*
- *  Copyright (c) 2020.  	Computer Architecture and System Laboratory, CASLab
- *							Dept. of Electrical Engineering & Inst. of Computer and Communication Engineering
- *							National Cheng Kung University, Tainan, Taiwan
- *  All Right Reserved
- *
- *	Written by  Han-Qun Huang (hanqun0723@gmail.com)
- *   
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation.
- * 
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- * 
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #ifndef _DMAC_H
 #define _DMAC_H
 
-#include "Acc_cofig.h"
-#include "systemc.h"
-#include "tlm.h"
-#include "tlm_utils/simple_initiator_socket.h"
 
-using namespace sc_core;
-using namespace sc_dt;
-using namespace std;
+
+#include "tlm_utils/simple_initiator_socket.h"
+#include "tlm_utils/peq_with_cb_and_phase.h"
+#include "mm.h"
+#include "ps_config.h"
+#include "Acc_cofig.h"
 
 //DMA state machine
 #define DMA_IDLE 0
 #define DMA_READ 1
 #define DMA_WRITE 2
-#define DMA_IRQ   3
-#define DMA_FINISH 4
+#define WAIT_DRAM_RESP 3
+#define DMA_IRQ   4
+#define DMA_FINISH 5
 
-SC_MODULE(DMAC)
-{
-    tlm_utils::simple_initiator_socket<DMAC> socket_m;
+SC_MODULE(DMAC){
+
+    tlm_utils::simple_initiator_socket<DMAC> socket;
 
     sc_in<bool> clk;
     sc_in<bool> rst;
@@ -51,10 +30,13 @@ SC_MODULE(DMAC)
     sc_in<sc_uint<32> > osram_id;
     sc_in<sc_uint<32> > length;
     sc_in<sc_int<OSRAM_DATA_WIDTH> > osram_data[OSRAM_NUM];
-    sc_in<bool> DMA_start; 
+    sc_in<bool> osram_valid;
+    sc_out<bool> dma_resp;
+
+    sc_in<bool> DMA_start;
 
     sc_out<sc_int<32> > read_data;
-    sc_out<bool>        data_valid;
+    sc_out<bool>        dram_done;
 
     sc_out<bool>        DMA_irt;
     sc_in<bool>         DMA_irtclr;
@@ -66,26 +48,40 @@ SC_MODULE(DMAC)
     sc_signal<sc_uint<32> > src_Reg;
     sc_signal<sc_uint<32> > tgt_Reg;
     sc_signal<sc_uint<32> > length_Reg;
-    //sc_signal<sc_int<32> > data;
 
-    //internel register
     sc_signal<sc_uint<32> > count_Reg;
+
+    int32_t data_buffer[0];
+    sc_int<1> done;
     int data_m;
 
-
+    mm   m_mm;
+    
     void do_DMAC();
     void do_reset();
-    void b_transport(tlm::tlm_generic_payload&, sc_time&);
+    void transport(bool rw,uint32_t addr, int32_t* data, uint32_t length);
+    
+    virtual tlm::tlm_sync_enum nb_transport_bw( 
+    tlm::tlm_generic_payload& trans,
+    tlm::tlm_phase& phase, sc_time& delay );
 
-    //void do_reset();
+    void peq_cb(tlm::tlm_generic_payload& trans, const tlm::tlm_phase& phase);
 
-    SC_CTOR(DMAC):socket_m("socket_m")
+    tlm::tlm_generic_payload* request_in_progress;
+    sc_event end_request_event;
+    tlm_utils::peq_with_cb_and_phase<DMAC> m_peq;
+
+
+    SC_CTOR(DMAC):
+        socket("socket")
+        ,request_in_progress(0)
+        ,m_peq(this , &DMAC::peq_cb)
     {
+        socket.register_nb_transport_bw(this, &DMAC::nb_transport_bw);
         SC_THREAD(do_DMAC);
-        sensitive << clk.pos() << rst.pos();
+        sensitive << clk.pos();
     }
 
 };
-
 
 #endif

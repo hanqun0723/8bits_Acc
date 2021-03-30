@@ -5,7 +5,7 @@ CXX         = g++
 
 INCFLAGS    = -I. -I${SYSTEMC_DIR}/include
 LDFLAGS     = -L${SYSTEMC_DIR}/lib-linux64 -lsystemc -lm
-SRC_CPPHEAD = DRAM DMAC DNNAcc InputSRAMbank WeightSRAMbank WeightSRAM SRAM_BUS RegArray Reg_MUX PE OutputSRAM Controller
+SRC_CPPHEAD =  mm DRAM DMAC DNNAcc InputSRAMbank WeightSRAMbank WeightSRAM SRAM_BUS RegArray Reg_MUX PE OutputSRAM Controller
 SRC_CPP     =
 HEADERS     =
 MAIN        = main.cpp
