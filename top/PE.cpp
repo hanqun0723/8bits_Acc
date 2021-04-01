@@ -76,7 +76,6 @@ void PE::do_Accum()
 
     if(add_prev.read())
         psum = psum + prev_psum.read();
-
     // if(last_channel.read())
     // {
     //     //Relu

@@ -1,5 +1,5 @@
-#define INPUT_W (100)
-#define INPUT_H (100)
+#define INPUT_W (12)
+#define INPUT_H (12)
 #define INPUT_C (3)
 
 #define F_SIZE (3)

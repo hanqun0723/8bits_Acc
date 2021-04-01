@@ -47,7 +47,7 @@ SC_MODULE(DRAM){
                 {
                     //alignment 4
                     if ( (i % 4 < 4) && (i < INPUT_W) )
-                        fin >> tmp.range( (3 - (i % 4)) * 8 + 7,(3 - (i % 4)) * 8);
+                        fin >> tmp.( (3 - (i % 4)) * 8 + 7,(3 - (i % 4)) * 8);
                     else 
                         tmp.range( (3 - (i % 4)) * 8 + 7,(3 - (i % 4)) * 8) = 0;
                     

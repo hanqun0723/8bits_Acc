@@ -52,9 +52,10 @@
 #define ACC_FINISH        (4)
 
 /******PE******/
-#define READ_ISRAM  (0)
-#define ISRAM_TO_REG (1)
-#define PE_START    (2)
+#define READ_WSRAM  (0)
+#define READ_ISRAM  (1)
+#define ISRAM_TO_REG (2)
+#define PE_START    (3)
 
 
 #define FSIZE_3_CASE1  (0)

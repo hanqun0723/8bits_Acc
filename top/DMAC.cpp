@@ -64,10 +64,7 @@ void DMAC::do_DMAC(){
                     transport(1, tgt_Reg.read() + (count_Reg.read() * 4), data_buffer , 4 );
                     count_Reg.write(count_Reg.read() + 1);
                 }
-                // cout << "//////////////DMA_WRITE/////////////" << endl;
-                // cout << "addr : " <<  tgt_Reg.read() + (count_Reg.read() * 4) << endl;
-                // cout << "data : " <<  osram_data[osram_id.read()].read() << endl;
-                // cout << "time : " << sc_time_stamp() << endl;
+
             }break;
 
             case WAIT_DRAM_RESP:{

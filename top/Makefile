@@ -17,7 +17,7 @@ all: $(EXE)
 
 $(EXE): $(MAIN) $(OBJECTS) $(HEADERS)
 	@echo "$@ building..."
-	$(CXX) $(INCFLAGS) $(MAIN) $(OBJECTS) $(LDFLAGS) -o $@
+	$(CXX) $(INCFLAGS) -MD $(MAIN) $(OBJECTS) $(LDFLAGS) -o $@
 	@echo ""
 	@echo "$@ build done successfully..."
 	@echo ""

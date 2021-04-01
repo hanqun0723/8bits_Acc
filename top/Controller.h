@@ -105,11 +105,18 @@ SC_MODULE(Controller)
     
     int out_length;
     sc_int<32> osram_req;
-    //address control
+    //input address control
     sc_signal<sc_uint<32> > h_Reg;
     sc_signal<sc_uint<32> > w_Reg;
     sc_signal<sc_uint<32> > c_Reg;
 
+    //output address control
+    sc_signal<sc_uint<32> > out_h_Reg;
+    sc_signal<sc_uint<32> > out_w_Reg;
+    sc_signal<sc_uint<32> > out_c_Reg;
+    sc_signal<sc_uint<32> > ofmap_h_Reg;
+    sc_signal<sc_uint<32> > ofmap_w_Reg;
+    sc_signal<sc_uint<32> > ofmap_c_Reg;
     //interal register
     sc_signal<sc_uint<32> > ibank_ctrl_Reg; 
     sc_signal<sc_uint<32> > ibank_addr_Reg;
@@ -119,7 +126,9 @@ SC_MODULE(Controller)
 
     sc_signal<sc_uint<32> > tile_h_Reg;
     sc_signal<sc_uint<32> > tile_w_Reg;
+    sc_signal<sc_uint<32> > tile_overlap_Reg;
 
+    sc_signal<bool> proc_ctrl_Reg[ISRAM_BANK_NUM];  //64 bank
     sc_signal<bool> first_load_Reg;
     sc_signal<sc_uint<32> > store_col_index_Reg;
     sc_signal<sc_uint<32> > shift_count_Reg;
@@ -127,10 +136,15 @@ SC_MODULE(Controller)
     sc_signal<bool> write_result_Reg;
     sc_signal<sc_uint<32> > dma_count_Reg;
     sc_signal<sc_uint<32> > conv_count_Reg;
-    sc_signal<sc_uint<32> > tile_overlap_Reg;
-    
+    sc_signal<sc_uint<32> > store_count_Reg;
+    sc_signal<sc_uint<32> > row_sel_Reg;
+    sc_signal<sc_uint<32> > wsram_id_Reg;
+    sc_signal<bool> align_Reg; //if 0 = align, 1 = unalign 
+    sc_signal<sc_int<8> > align_data_Reg[8];
+
     sc_uint<32> load_tile_width;
     sc_uint<32> load_tile_height;
+    sc_uint<32> pe_stall;
     //DMAC
     // sc_in<bool>         DMA_done;   //when finish one buffer
     // //sc_in<bool>         DMA_irt;    //all data are transfered
@@ -149,6 +163,8 @@ SC_MODULE(Controller)
     void do_Controller();
     void do_dmaRead();
     void do_dmaWrite();
+    void do_Input_addrCtrl();
+    void do_Output_addrCtrl();
 
     void do_startPE();
     void do_reset();

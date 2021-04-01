@@ -4,11 +4,15 @@
 #include "systemc.h"
 #include "Acc_cofig.h"
 #include "string.h"
+#include <time.h>
 #include "./conv_testdata/param.h"
 
 using namespace std;
 
 int sc_main(int argc, char *argv[]){
+
+    clock_t start_time, end_time;
+    int cycle_count = 0;
 
     sc_clock clk("clk", 10);
     sc_signal<bool> rst;
@@ -142,7 +146,7 @@ int sc_main(int argc, char *argv[]){
     {
         sc_trace(tf, dram1->mem[i], "dram1.mem("+to_string(i)+")");
     }
-    for(int i = (DRAM_OUTPUT_BASE/4); i < (DRAM_OUTPUT_BASE/4 + 10); i++)
+    for(int i = (DRAM_OUTPUT_BASE/4); i < (DRAM_OUTPUT_BASE/4 + 30); i++)
     {
         sc_trace(tf, dram1->mem[i], "dram1.mem("+to_string(i)+")");
     }
@@ -249,9 +253,23 @@ int sc_main(int argc, char *argv[]){
     sc_trace(tf, dnnacc.controller.h_Reg, "dnnacc.controller.h_Reg");
     sc_trace(tf, dnnacc.controller.w_Reg, "dnnacc.controller.w_Reg");
     sc_trace(tf, dnnacc.controller.c_Reg, "dnnacc.controller.c_Reg");
+    sc_trace(tf, dnnacc.controller.ofmap_h_Reg, "dnnacc.controller.ofmap_h_Reg");
+    sc_trace(tf, dnnacc.controller.ofmap_w_Reg, "dnnacc.controller.ofmap_w_Reg");
+    sc_trace(tf, dnnacc.controller.ofmap_c_Reg, "dnnacc.controller.ofmap_c_Reg");
+    sc_trace(tf, dnnacc.controller.out_h_Reg, "dnnacc.controller.out_h_Reg");
+    sc_trace(tf, dnnacc.controller.out_w_Reg, "dnnacc.controller.out_w_Reg");
+    sc_trace(tf, dnnacc.controller.out_c_Reg, "dnnacc.controller.out_c_Reg");
     sc_trace(tf, dnnacc.controller.tile_w_Reg, "dnnacc.controller.tile_w_Reg");
     sc_trace(tf, dnnacc.controller.tile_h_Reg, "dnnacc.controller.tile_h_Reg");
     sc_trace(tf, dnnacc.controller.osram_req, "dnnacc.controller.osram_req");
+    sc_trace(tf, dnnacc.controller.pe_stall, "dnnacc.controller.pe_stall");
+    sc_trace(tf, dnnacc.controller.align_Reg, "dnnacc.controller.align_Reg");
+    sc_trace(tf, dnnacc.controller.add_prev, "dnnacc.controller.add_prev");
+    sc_trace(tf, dnnacc.controller.row_sel_Reg, "dnnacc.controller.row_sel_Reg");
+    for(int i = 0; i < ISRAM_BANK_NUM; i++)
+        sc_trace(tf, dnnacc.controller.proc_ctrl_Reg[i], "proc_ctrl_Reg("+to_string(i)+")");
+    for(int i = 0; i < 7; i++)
+        sc_trace(tf, dnnacc.controller.align_data_Reg[i], "dnnacc.controller.align_data_Reg("+to_string(i)+")");
     //Start Simulation
     rst.write(1);
     start.write(0);
@@ -267,12 +285,20 @@ int sc_main(int argc, char *argv[]){
     //     cout << endl;
     // }
     // cout << "/////////////////////////////// " << endl;
-
+ 
+    start_time = clock();
     rst.write(0);
     start.write(1);
     sc_start(10,SC_NS);
+    cycle_count++;
     start.write(0);
-    sc_start(400000,SC_NS);
+    while(dnnacc.controller.state.read() != ACC_FINISH)
+    {
+        sc_start(10,SC_NS);
+        cycle_count++;
+    }
+    end_time = clock();
+    //sc_start(220000,SC_NS);
 
     // for(int i = 0; i < ISRAM_BANK_NUM; i++)
     // {
@@ -343,6 +369,15 @@ int sc_main(int argc, char *argv[]){
         }
         cout << endl;
     }
+    cout << "////////////WSRAM1///////////// " << endl;
+    for(int i = 0; i < 6; i++)
+    {
+        for(int j = 0; j < WSRAM_BANK_NUM; j++)
+        {
+            cout << dnnacc.wsram[1].wbank[j].weight[i] << " ";
+        }
+        cout << endl;
+    }
     // cout << "////////////WSRAM1///////////// " << endl;
     // for(int i = 0; i < 6; i++)
     // {
@@ -374,14 +409,14 @@ int sc_main(int argc, char *argv[]){
         int temp;
         fin >> temp;
         golden[i] = temp;
-        // if (golden[i] == (dram1->mem[DRAM_OUTPUT_BASE/4 + i]))
-        //     //cout << "";
-        //     cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dram1->mem[(DRAM_OUTPUT_BASE/4) + i] << " pass " << endl;
-        // else
-        // {
-        //     cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dram1->mem[(DRAM_OUTPUT_BASE/4) + i] << " error " << endl;
-        //     err++;
-        // }
+        if (golden[i] == (dram1->mem[DRAM_OUTPUT_BASE/4 + i]))
+            //cout << "";
+            cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dram1->mem[(DRAM_OUTPUT_BASE/4) + i] << " pass " << endl;
+        else
+        {
+            cout << "golden["  << i << "]"  << " : " << golden[i] << " , " << "output : " << dram1->mem[(DRAM_OUTPUT_BASE/4) + i] << " error " << endl;
+            err++;
+        }
     }
     // for(int i = 0; i < 64; i++){
     //     int temp;
@@ -424,6 +459,10 @@ int sc_main(int argc, char *argv[]){
         printf("\n");
     }
 
+    printf("///////////////Timing Info///////////////////\n");
+    printf("Clock time : %f\n", ((double) (end_time - start_time)) / CLOCKS_PER_SEC);
+    printf("Simulation cycle : %d\n", cycle_count);
+    printf("/////////////////////////////////////////////\n");
 
     sc_close_vcd_trace_file(tf); 
 

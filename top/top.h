@@ -12,6 +12,7 @@
 // Needed for the simple_target_socket
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 
+//for DRAM model
 #include <systemc.h>
 using namespace sc_core;
 using namespace sc_dt;
