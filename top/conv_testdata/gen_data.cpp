@@ -6,9 +6,14 @@
 int main(){
 
     FILE *file;
-    int data[INPUT_W * INPUT_H * INPUT_C] = {0};
-    int weight[F_SIZE * F_SIZE * INPUT_C * F_NUM] = {0};
-    int output[OUTPUT_W * OUTPUT_H * F_NUM] = {0};
+    //int *p = malloc(sizeof(int) * 1000);
+
+    int *data = (int *)malloc(sizeof(int) * INPUT_W * INPUT_H * INPUT_C);
+    int *weight = (int *)malloc(sizeof(int) * F_SIZE * F_SIZE * INPUT_C * F_NUM);
+    int *output = (int *)malloc(sizeof(int) * OUTPUT_W * OUTPUT_H * F_NUM);
+    // int data[INPUT_W * INPUT_H * INPUT_C] = {0};
+    // int weight[F_SIZE * F_SIZE * INPUT_C * F_NUM] = {0};
+    // int output[OUTPUT_W * OUTPUT_H * F_NUM] = {0};
 
     file = fopen("input.txt", "wt");
     srand( time(NULL) );

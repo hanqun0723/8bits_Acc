@@ -38,11 +38,11 @@
 #define BANK_BIT (8)
 
 #ifdef FAST_SIM
-	// #define tRP (1)
-	// #define tRCD (1)
-	// #define tCL (1)
-	// #define tRAS (1)
-	// #define magic_delay (1)
+	#define tRP (1)
+	#define tRCD (1)
+	#define tCL (1)
+	#define tRAS (1)
+	#define magic_delay (1)
 #else  // using DDR4-2400
 	#define tRP (15)
 	#define tRCD (15)

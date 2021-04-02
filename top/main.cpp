@@ -13,8 +13,8 @@ int sc_main(int argc, char *argv[]){
 
     clock_t start_time, end_time;
     int cycle_count = 0;
-
-    sc_clock clk("clk", 10);
+    double cycle_time = 3.33; //300MHz
+    sc_clock clk("clk", cycle_time);
     sc_signal<bool> rst;
 
     sc_signal<sc_uint<2> >  dma_type;
@@ -192,7 +192,10 @@ int sc_main(int argc, char *argv[]){
     //         sc_trace(tf, dnnacc.wsram[0].wbank[i].weight[j], "dnnacc.wsram(0).wbank_i("+to_string(i)+").weight("+to_string(j)+")");
     //     }
     // }
-
+    sc_trace(tf, dnnacc.wsram[3].wbank[0].weight[0], "dnnacc.wsram(3).wbank_i(0).weight(0)");
+    sc_trace(tf, dnnacc.wsram[3].wbank[1].weight[0], "dnnacc.wsram(3).wbank_i(1).weight(0)");
+    sc_trace(tf, dnnacc.wsram[3].wbank[2].weight[0], "dnnacc.wsram(3).wbank_i(2).weight(0)");
+    sc_trace(tf, dnnacc.wsram[3].wbank[3].weight[0], "dnnacc.wsram(3).wbank_i(3).weight(0)");
     for(int i = 0; i < ISRAM_BANK_NUM; i++)
     {
         sc_trace(tf, dnnacc.ibank[i].data_i, "dnnacc.ibank("+to_string(i)+").data_i("+to_string(0)+")");
@@ -216,7 +219,13 @@ int sc_main(int argc, char *argv[]){
     sc_trace(tf, dnnacc.osram[0].data_o, "osram.osram_data_o");
 
     for(int i = 0; i < (64*64); i++)
-        sc_trace(tf, dnnacc.osram[0].O_SRAMdata[i], "osram.o_sramdata("+to_string(i)+")");
+        sc_trace(tf, dnnacc.osram[0].O_SRAMdata[i], "osram0.o_sramdata("+to_string(i)+")");
+    for(int i = 0; i < (64*64); i++)
+        sc_trace(tf, dnnacc.osram[1].O_SRAMdata[i], "osram1.o_sramdata("+to_string(i)+")");
+    for(int i = 0; i < (64*64); i++)
+        sc_trace(tf, dnnacc.osram[3].O_SRAMdata[i], "osram3.o_sramdata("+to_string(i)+")");
+    for(int i = 0; i < (64*64); i++)
+        sc_trace(tf, dnnacc.osram[4].O_SRAMdata[i], "osram3.o_sramdata("+to_string(i)+")");
     sc_trace(tf, dnnacc.osram[0].addr_w, "osram.addr_w");
     sc_trace(tf, dnnacc.osram[0].addr_r, "osram.addr_r");
 
@@ -266,6 +275,7 @@ int sc_main(int argc, char *argv[]){
     sc_trace(tf, dnnacc.controller.align_Reg, "dnnacc.controller.align_Reg");
     sc_trace(tf, dnnacc.controller.add_prev, "dnnacc.controller.add_prev");
     sc_trace(tf, dnnacc.controller.row_sel_Reg, "dnnacc.controller.row_sel_Reg");
+    sc_trace(tf, dnnacc.controller.osram_id_Reg, "dnnacc.controller.osram_id_Reg");
     for(int i = 0; i < ISRAM_BANK_NUM; i++)
         sc_trace(tf, dnnacc.controller.proc_ctrl_Reg[i], "proc_ctrl_Reg("+to_string(i)+")");
     for(int i = 0; i < 7; i++)
@@ -273,8 +283,8 @@ int sc_main(int argc, char *argv[]){
     //Start Simulation
     rst.write(1);
     start.write(0);
-    sc_start(10,SC_NS);
-
+    sc_start(cycle_time,SC_NS);
+    cycle_count++;
     // cout << "////////////WSRAM0///////////// " << endl;
     // for(int i = 0; i < 10; i++)
     // {
@@ -289,15 +299,25 @@ int sc_main(int argc, char *argv[]){
     start_time = clock();
     rst.write(0);
     start.write(1);
-    sc_start(10,SC_NS);
+    sc_start(cycle_time,SC_NS);
     cycle_count++;
     start.write(0);
+    //sc_start(500, SC_NS);
     while(dnnacc.controller.state.read() != ACC_FINISH)
     {
-        sc_start(10,SC_NS);
+        sc_start(cycle_time,SC_NS);
         cycle_count++;
+        if (cycle_count % 10000 == 0)
+        {
+            cout << endl << "////////////////////////////////////////" << endl;
+            cout << "cycle : " << cycle_count << endl;
+            cout << "time : " << sc_time_stamp() << " Acc working !!!!!!!" << endl;
+            cout << "////////////////////////////////////////" << endl;
+        }
     }
     end_time = clock();
+    printf("\a");
+
     //sc_start(220000,SC_NS);
 
     // for(int i = 0; i < ISRAM_BANK_NUM; i++)
@@ -378,6 +398,33 @@ int sc_main(int argc, char *argv[]){
         }
         cout << endl;
     }
+    cout << "////////////WSRAM2///////////// " << endl;
+    for(int i = 0; i < 6; i++)
+    {
+        for(int j = 0; j < WSRAM_BANK_NUM; j++)
+        {
+            cout << dnnacc.wsram[2].wbank[j].weight[i] << " ";
+        }
+        cout << endl;
+    }
+    cout << "////////////WSRAM3///////////// " << endl;
+    for(int i = 0; i < 6; i++)
+    {
+        for(int j = 0; j < WSRAM_BANK_NUM; j++)
+        {
+            cout << dnnacc.wsram[3].wbank[j].weight[i] << " ";
+        }
+        cout << endl;
+    }
+    cout << "////////////WSRAM4///////////// " << endl;
+    for(int i = 0; i < 6; i++)
+    {
+        for(int j = 0; j < WSRAM_BANK_NUM; j++)
+        {
+            cout << dnnacc.wsram[4].wbank[j].weight[i] << " ";
+        }
+        cout << endl;
+    }
     // cout << "////////////WSRAM1///////////// " << endl;
     // for(int i = 0; i < 6; i++)
     // {
@@ -418,6 +465,11 @@ int sc_main(int argc, char *argv[]){
             err++;
         }
     }
+
+    // for(int i = 0; i < 10; i++)
+    // {
+    //     printf("mem[%d] : 0x%x\n", i, dram1->mem[DRAM_INPUT_BASE + i]);
+    // }
     // for(int i = 0; i < 64; i++){
     //     int temp;
     //     fin >> temp;
@@ -462,6 +514,8 @@ int sc_main(int argc, char *argv[]){
     printf("///////////////Timing Info///////////////////\n");
     printf("Clock time : %f\n", ((double) (end_time - start_time)) / CLOCKS_PER_SEC);
     printf("Simulation cycle : %d\n", cycle_count);
+    printf("Simulation time : %f ns\n", (double)cycle_count * (double)cycle_time);
+    printf("Simulation time : %f s\n", (double)cycle_count * (double)cycle_time/1000/1000/1000);
     printf("/////////////////////////////////////////////\n");
 
     sc_close_vcd_trace_file(tf); 
