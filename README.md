@@ -30,6 +30,7 @@ Input : 418 418 3 | Weight : 3 3 3 1 | Output : 416 416 1
 
 Test pass :
 Yolov3-tiny(layer1) Input : 418 418 3 | Weight : 3 3 3 16 | Output : 416 416 16
+
 Clock time : 3816.495684
 Simulation cycle : 11832269
 Simulation time : 39401455.770000 ns
