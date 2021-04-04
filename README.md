@@ -41,7 +41,8 @@ Simulation time : 0.039401 s
 
 1. Finish Dequantize , bias and activation
 2. QEMU-RISCV(Debian) connect to SystemC module
-
+3. Fix MDFI(8-16-8) on QEMU-RISCV bug
+ 
 ---
 
 If Input channel > 128 (Filter number <= 32)
