@@ -39,7 +39,8 @@ Simulation time : 0.039401 s
 
 2021/04/04
 
-Finish Dequantize , bias and activation
+1. Finish Dequantize , bias and activation
+2. QEMU-RISCV(Debian) connect to SystemC module
 
 ---
 
