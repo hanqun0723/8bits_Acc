@@ -9,10 +9,9 @@ Usage :
 
 Unfinished:
 1. filter size = 3, test Input channel > 128 or Filter number > 32 (04/01~04/02)
-2. Dequantize , bias (04/01)
-3. different filter size
-4. pooling unit
-5. DMA padding?
+2. different filter size
+3. pooling unit
+4. DMA padding?
 
 ---
 
@@ -35,6 +34,12 @@ Clock time : 3816.495684
 Simulation cycle : 11832269
 Simulation time : 39401455.770000 ns
 Simulation time : 0.039401 s
+
+---
+
+2021/04/04
+
+Finish Dequantize , bias and activation
 
 ---
 
